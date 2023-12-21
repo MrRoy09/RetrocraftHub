@@ -3,13 +3,31 @@ body{
 }
 
 
+
 .top-section{
     background: rgb(2,0,36);
     background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
-    padding:100px;
     margin:0;
+    padding-top:40px;
+    padding-left: 60px;
+    padding-right: 60px;
+    padding-bottom: 70px;
     color:white;
 }
+
+.navbar{
+    padding-right:5%;
+    padding-left:3%;
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+}
+
+.navbar-logo{
+    max-width: 50px;
+    max-height: auto;;
+}
+
+
 
 
 .top-div {
@@ -26,10 +44,10 @@ body{
 }
 
 .form-wrapper{
-    margin-top: 10%;
+    margin-top: 8%;
 }
 
-input{
+.input{
     width:80%;
     height:40px;
     margin-bottom: 2%;
@@ -61,13 +79,8 @@ input{
 
 .text-wrapper{
     max-width: 80%;
-    margin-top: 3%;
-    padding: 1%;
+    margin-top: 5%;
     text-align: left;
-    border-style: solid;
-    border-radius: 5%;
-    border-color: black;
-    background-color: black;
     color:white;
 }
 
