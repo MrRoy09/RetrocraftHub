@@ -68,32 +68,45 @@
                     <div class="text-wrapper" id="Appearing-text"></div>
 
                     <div class="login-form-wrapper show">
+                      <form action="/login" method="POST">
+
                         <p>Email or Phone</p>
-                        <input type="text" class="input"/>
+                        <input name='email' type="text" class="input"/>
                         <p>Password</p>
-                        <input type="password" class="input"/>
-                        <button type="button" class="btn btn-primary btn-lg submit">Log In</button>
+                        <input name="password" type="password" class="input"/>
+                        <button type="submit" class="btn btn-primary btn-lg submit">Log In</button>
+                        {{#if message }}
+                    <h4 class="alert alert-danger mt-4">{{message}}</h4>
+                         {{/if}}
                         <a href="#" onclick="toggle_display1()" id="tsign-up" style="display:block; margin-top: 2%; color:#334dff; font-weight: bolder; text-decoration: none; margin-top: 15px;">Dont Have an account yet?</a>
+                      </form>
                     </div>
 
                     <div class="signup-form-wrapper hide">
+                      <form action="/signup" method="POST">
                         <p>Email or Phone</p>
-                        <input type="text" class="input"/>
+                        <input name="email" type="text" class="input"/>
                         <p>Password</p>
-                        <input type="password" class="input"/>
+                        <input name="password" type="password" class="input"/>
                         <p>Confirm Password</p>
-                        <input type="password" class="input"/>
+                        <input name="password_confirm" type="password" class="input"/>
 
-                        <button type="button" class="btn btn-primary btn-lg submit">Sign up</button>
+                        <button type="submit" class="btn btn-primary btn-lg submit">Sign up</button>
+                        {{#if message }}
+                    <h4 class="alert alert-danger mt-4">{{message}}</h4>
+                         {{/if}}
 
                         <a href="#" onclick="toggle_display1()" id="tlog-in" style="display:block; margin-top: 2%; color:#334dff; font-weight: bolder; text-decoration: none; margin-top: 15px;">Already have an account?</a>
+                        </form>
                       </div>
                 </div>
                 <div class="image-wrapper">
                     <img class ="header-image" src="images/header-image.jpg"/>
                 </div>
+                 
             </div>
         </section>
+       
 
 
 
