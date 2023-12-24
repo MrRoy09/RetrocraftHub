@@ -1,5 +1,5 @@
 <h1>INSTRUCTIONS TO SETUP PROJECT</h1>  
-Download NPM 
+Download NODE JS
 <br>
 Download all files into a folder  
 <br>
