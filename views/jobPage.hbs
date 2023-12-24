@@ -62,14 +62,14 @@
        
        <div class="container-fluid" style="padding:4%;">
         <div class="text-center container-fluid">
-            <h1>Your Current Jobs</h1>
+            <h1>All Available Jobs</h1>
         </div>
         {{#each jobList}}
        <div class="card job-card" style="width: 18rem;">
             <div class="card-body">
             <h5 class="card-title">{{this.jobname}}</h5>
             <p class="card-text">{{this.jobdes}}</p>
-            <a href="aJob{{this.jobid}}" class="btn btn-primary">Go somewhere</a>
+            <a href="requestJob?id={{this.jobid}}" class="btn btn-primary">Go somewhere</a>
             </div>
         </div>
         {{/each}}

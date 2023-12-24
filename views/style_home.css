@@ -1,0 +1,15 @@
+.navbar-logo{
+    max-width: 50px;
+    max-height: auto;;
+}
+
+.job-card{
+    margin: 5%;
+    margin-bottom:3%;
+    margin-top:3%;
+    display:inline-block;
+}
+
+.card-body{
+    padding-top:20px;
+}
