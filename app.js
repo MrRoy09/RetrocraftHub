@@ -3,16 +3,36 @@ const mysql = require("mysql")
 const dotenv = require('dotenv')
 const path = require("path")
 const bcrypt = require("bcryptjs")
-
-const publicDir = path.join(__dirname, './public')
-
-
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+const { v4: uuidv4 } = require('uuid');
 const app = express();
+
+app.use(bodyParser.json())
+app.use(cookieParser())
+app.use(express.urlencoded({extended: 'false'}))
+app.use(express.json())
+app.set('view engine', 'hbs')
+app.use(express.static("views"));
+
+
+class Session {
+    constructor(username, expiresAt) {
+        this.username = username
+        this.expiresAt = expiresAt
+    }
+    isExpired() {
+        this.expiresAt < (new Date())
+    }
+}
+const sessions = {}
+
+
 const db = mysql.createConnection({
     host: 'localhost',
     port: 3701,
     user: 'root',
-    database: 'login-db',
+    database: 'master-db',
 })
 
 db.connect((error) => {
@@ -22,15 +42,44 @@ db.connect((error) => {
         console.log("MySQL connected!")
     }
 })
-app.set('view engine', 'hbs')
-app.use(express.static("views"));
+
 
 app.get("/", (req, res) => {
     res.render("index")
 })
 
-app.use(express.urlencoded({extended: 'false'}))
-app.use(express.json())
+app.get("/home",(req,res)=>{
+    console.log(req.cookies['session_token'])
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+        
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+        
+    }
+    if (userSession.isExpired()) {
+        console.log("check4-fail")
+        delete sessions[sessionToken]
+        res.redirect('/')
+        return
+    }
+    res.render('home')
+})
+
+
+
 
 app.post("/signup", (req, res) => {    
     const {email, password, password_confirm } = req.body
@@ -78,12 +127,20 @@ app.post("/login",(req,res)=>{
                 res.render('index',{message:'Email not registered'})
             }
             else{
-                if(!bcrypt.compare(password,result[0].Password)){
+                password_check=await bcrypt.compare(password,result[0].Password)
+                if(!password_check){
                     
                     res.render('index',{message:'Wrong Password'})
                 }
                 else{
-                    res.render('index',{message:'Successful... Redirecting '})
+                    const sessionToken = uuidv4()
+                    const now = new Date()
+                    const expiresAt = new Date(+now + 120 * 1000)
+                    const session = new Session(email, expiresAt)
+                    sessions[sessionToken] = session
+                    res.cookie("session_token", sessionToken, { expires: expiresAt })
+                    res.redirect("/home")
+                    res.end()
                 }
             }
             
