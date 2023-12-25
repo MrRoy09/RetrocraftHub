@@ -65,15 +65,22 @@
             <h1>All Available Jobs</h1>
         </div>
         {{#each jobList}}
-       <div class="card job-card" style="width: 18rem;">
-            <div class="card-body">
+       <div class="card job-card" style="width: 25rem;">
+            <div class="card-body text-center">
             <h5 class="card-title">{{this.jobname}}</h5>
             <p class="card-text">{{this.jobdes}}</p>
-            <a href="requestJob?id={{this.jobid}}" class="btn btn-primary">Go somewhere</a>
+            <p class="card-text">{{this.isRequested}}</p>
+            <a href="requestJob?id={{this.jobid}}" class="btn btn-primary" style="display:inline; margin:3%;">Send Application</a>
+            <a href="detailsJob?id={{this.jobid}}" class="btn btn-primary" style="display:inline; margin:3%;">View More Details</a>
             </div>
         </div>
         {{/each}}
        </div>
+       {{#if message}}
+       <div class="fluid-container text-center">
+          <h2>{{message}}</h2>
+       </div>
+       {{/if}}
        
 
 

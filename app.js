@@ -35,9 +35,53 @@ class Job{
     }
 }
 
+function getJobRequests(userid,db){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM job_requests WHERE userid=?"
+        var value=[[userid]]
+        db.query(query_str,value,(err,res)=>{
+        if(err){
+            return reject(err)
+        }
+        else{
+            return resolve(res)
+        }
+    })
+    })
+}
+
+function getJobs(jobid,db){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM jobs WHERE jobid=?"
+        var value=[[jobid]]
+        db.query(query_str,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
+function getAllJobs(db){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * from jobs WHERE job_accepted=0"
+        db.query(query_str,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
@@ -54,10 +98,8 @@ app.get("/", (req, res) => {
     res.render("index")
 })
 
-
-
-app.post("/signup", (req, res) => {    
-    const {email, password, password_confirm } = req.body
+app.post("/signup", (req, res) => {   
+    const {email, password, password_confirm} = req.body
     check_query = "SELECT * from users WHERE Email=?;"
     let user_email =[[email]]
     db.query(check_query,user_email,async(err,result)=>{
@@ -70,8 +112,7 @@ app.post("/signup", (req, res) => {
         if (password!=password_confirm){
             return res.render('index',{message:'passwords dont match'})
         }
-        
-        insert_query="INSERT INTO USERS (name,email,password) VALUES ?;"
+        insert_query="INSERT INTO users (name,email,password) VALUES ?;"
         var hashedPassword = await bcrypt.hash(password, 8)
         var value=[['user',email, hashedPassword]]
         db.query(insert_query,[value],(err,result2)=>{
@@ -149,7 +190,7 @@ app.get("/userhome",(req,res)=>{
     db.query(query,values,(err,result)=>{
         jobList=[]
         for (var i=0;i<result.length;i++){
-            job=new Job(result[i].job_id,result[i].job_name,result[i].job_description)
+            job=new Job(result[i].job_id,result[i].jobname,result[i].jobdescription)
             jobList.push(job)
         }
         res.render('home',{jobList:jobList})
@@ -157,7 +198,7 @@ app.get("/userhome",(req,res)=>{
     
 })
 
-app.get("/job-page",(req,res)=>{
+app.get("/job-page",async (req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
         res.redirect('/')
@@ -179,44 +220,76 @@ app.get("/job-page",(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     user_name=sessions[session_cookie_no].name
     userid=sessions[session_cookie_no].user_id
-    query='SELECT * FROM jobs WHERE job_accepted=0;'
-    db.query(query,(err,result)=>{
-        if (err){
-            console.log(err)
-        }
-        var jobList=[]
-        for (var i=0;i<result.length;i++){
-            query='SELECT * from job_requests where jobid=? AND user_id=?'
-            values=[[result[i].job_id],userid]
-            job=new Job(result[i].job_id,result[i].job_name,result[i].job_description)
-            jobList.push(job)
-        }
-        res.render('jobPage',{jobList:jobList})})
+
+    jobList=[]
+    rows=await getAllJobs(db)
+    
+    for(var i=0;i<rows.length;i++){
+        jobList.push(new Job(rows[i].jobid,rows[i].jobname,rows[i].jobdes))
+    }
+    
+    res.render('jobPage',{jobList:jobList})
+    return
 })
+    
+
 
 app.get("/requestjob",(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     var userid=sessions[session_cookie_no].user_id
     var jobid=req.query.id
-    query="SELECT * FROM jobs where job_id=?;"
-    value=[[jobid]]
-    db.query(query,value,(err,result)=>{
+    query="SELECT * FROM job_requests where jobid=? AND userid=?"
+    value1=[jobid,userid]
+    db.query(query,value1,(err,result)=>{
+        if(err){
+            console.log(err)
+        }
+        if (result.length!=0){
+            res.redirect('/job-page')
+            return
+        }
+        query="SELECT * FROM jobs where jobid=?;"
+        value=[[jobid]]
+        db.query(query,value,(err,result)=>{
         if (err){
             console.log(err)
         }
-        producerid=result[0].producer_id
-        query="INSERT INTO job_requests (`jobid`, `producer_id`, `user_id`) VALUES?"
+        producerid=result[0].producerid
+        query="INSERT INTO job_requests (`jobid`, `producerid`, `userid`) VALUES?"
         values=[[jobid,producerid,userid]]
         db.query(query,[values],(err,result)=>{
             if (err){
                 console.log(err)
             }
-            console.log(result)
+            res.redirect('/job-page')
+            return
         })
     })
-    res.redirect('/userhome')
+    })
+    return
 })
 
+app.get("/view-requests",async (req,res)=>{
+    var session_cookie_no=req.cookies['session_token']
+    if (!session_cookie_no){
+        res.redirect('/')
+    }
+    var userid=sessions[session_cookie_no].user_id
+    rows=await getJobRequests(userid,db)
+    var applications=[]
+    for(var i=0;i<rows.length;i++){
+        var job1 = await getJobs(rows[i].jobid,db)
+        applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes,1))
+    }
+    console.log(applications)
+    res.render('home',{jobList:applications})
+})
+
+app.get("/logout",(req,res)=>{
+    const sessionToken = req.cookies['session_token']
+    delete sessions[sessionToken]
+    res.redirect('/')
+})
 
 app.listen(5000, ()=> {
     console.log("server started on port 5000")
