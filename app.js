@@ -27,11 +27,13 @@ class Session {
 }
 
 class Job{
-    constructor(jobid,jobname,jobdes,isRequested=0){
+    constructor(jobid,jobname,jobdes,image='images/director.jpg',isRequested=0){
         this.jobid=jobid
         this.jobname=jobname
         this.jobdes=jobdes
         this.isRequested=isRequested
+        this.image=image
+
     }
 }
 
@@ -189,10 +191,31 @@ app.get("/userhome",(req,res)=>{
     values=[[userid]]
     db.query(query,values,(err,result)=>{
         jobList=[]
-        for (var i=0;i<result.length;i++){
-            job=new Job(result[i].job_id,result[i].jobname,result[i].jobdescription)
+        if (result.length==0){
+            var image='images/director.jpg'
+            job=new Job(0,'Nothing Yet','Keep Looking Champ',image)
             jobList.push(job)
         }
+        else{
+            for (var i=0;i<result.length;i++){
+                if(result[i].jobname=='Director'){
+                    var image='images/director.jpg'
+                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
+                    jobList.push(job)
+                }
+                else if (result[i].jobname=='Makeup Artist'){
+                    var image='images/makeup.jpg'
+                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
+                    jobList.push(job)
+                }
+                else{
+                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription)
+                    jobList.push(job)
+                }
+            }
+        }
+        
+        console.log(jobList)
         res.render('home',{jobList:jobList})
     })
     
@@ -223,7 +246,7 @@ app.get("/job-page",async (req,res)=>{
 
     jobList=[]
     rows=await getAllJobs(db)
-    
+
     for(var i=0;i<rows.length;i++){
         jobList.push(new Job(rows[i].jobid,rows[i].jobname,rows[i].jobdes))
     }
@@ -232,8 +255,6 @@ app.get("/job-page",async (req,res)=>{
     return
 })
     
-
-
 app.get("/requestjob",(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     var userid=sessions[session_cookie_no].user_id
@@ -274,15 +295,16 @@ app.get("/view-requests",async (req,res)=>{
     if (!session_cookie_no){
         res.redirect('/')
     }
+    
     var userid=sessions[session_cookie_no].user_id
     rows=await getJobRequests(userid,db)
     var applications=[]
     for(var i=0;i<rows.length;i++){
         var job1 = await getJobs(rows[i].jobid,db)
-        applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes,1))
+        applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes))
     }
     console.log(applications)
-    res.render('home',{jobList:applications})
+    res.render('JobApplications',{jobList:applications})
 })
 
 app.get("/logout",(req,res)=>{
