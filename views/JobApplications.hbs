@@ -20,14 +20,14 @@
         <nav class="navbar navbar-light bg-light mt-5 flex-column">
             <div class="navitems" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/userhome">Home <span class="sr-only">(current)</span></a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/userhome">Home </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/profile">View Profile</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/view-requests">View Requests</a>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/view-requests">View Requests<span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/job-page">All Jobs</a>
@@ -42,7 +42,7 @@
     
     <div class="user-content">
         <div class="current-jobs">
-            <h2 style="font-family: 'Roboto',sans-serif; text-align:center;">Your Jobs</h2>
+            <h2 style="font-family: 'Roboto',sans-serif; text-align:center;">Your Job Applications</h2>
             
             {{#each jobList}}
             <div class="card" style="width: 18rem;">
