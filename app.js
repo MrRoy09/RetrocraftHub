@@ -50,6 +50,68 @@ class Userinfo{
     }
 }
 
+function user_registration(name,email,password,password_confirm){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM  users WHERE email=?;"
+        var values=[email]
+        db.query(query_str,values,async (err,result)=>{
+            if(err){
+                return reject(err)
+            }
+
+            if(result.length!=0){
+                return resolve('User already Exists')
+            }
+
+            if(password!=password_confirm){
+                return resolve('Passwords Dont Match')
+            }
+            var insert_query="INSERT INTO users (name,email,password) VALUES ?;"
+            var hashedPassword = await bcrypt.hash(password, 8)
+            var value=[[name,email, hashedPassword]]
+            db.query(insert_query,[value],(err,result2)=>{
+                if (err){
+                    return reject('Error Occured in DB')
+                }
+                else{
+                    return resolve("Successful")
+                }
+            })
+        })
+    })
+}
+
+function producer_registration(name,email,password,password_confirm){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM producers WHERE email=?;"
+        var values=[email]
+        db.query(query_str,values,async (err,result)=>{
+            if(err){
+                return reject(err)
+            }
+
+            if(result.length!=0){
+                return resolve('User already Exists')
+            }
+
+            if(password!=password_confirm){
+                return resolve('Passwords Dont Match')
+            }
+            var insert_query="INSERT INTO producers (name,email,password) VALUES ?;"
+            var hashedPassword = await bcrypt.hash(password, 8)
+            var value=[[name,email, hashedPassword]]
+            db.query(insert_query,[value],(err,result2)=>{
+                if (err){
+                    return reject('Error Occured in DB')
+                }
+                else{
+                    return resolve("Successful")
+                }
+            })
+        })
+    })
+}
+
 function getJobRequests(userid,db){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * FROM job_requests WHERE userid=?"
@@ -128,34 +190,42 @@ app.get("/", (req, res) => {
     res.render("index")
 })
 
-app.post("/signup", (req, res) => {   
-    const {email, password, password_confirm} = req.body
-    check_query = "SELECT * from users WHERE Email=?;"
-    let user_email =[[email]]
-    db.query(check_query,user_email,async(err,result)=>{
-        if(err){
-            console.log(err)
-        }
-        if (result.length!=0){
-            return res.render('index',{message:'Email already Registered'})
-        }
-        if (password!=password_confirm){
-            return res.render('index',{message:'passwords dont match'})
-        }
-        insert_query="INSERT INTO users (name,email,password) VALUES ?;"
-        var hashedPassword = await bcrypt.hash(password, 8)
-        var value=[['user',email, hashedPassword]]
-        db.query(insert_query,[value],(err,result2)=>{
-            if (err){
-                console.log(err)
-            }
-            else{
-                console.log("Registration successful")
-                return res.render('index',{message:'User Registration Successful!'})
-            }
-        })
-    })
+app.get("/onboard",(req,res)=>{
+    res.render('onboard')
 })
+
+
+app.post("/signup", async(req, res) => {   
+    const {name,email, password, password_confirm,role} = req.body
+    if(role=='users'){
+        var response=await user_registration(name,email,password,password_confirm)
+        if(response=="Successful"){
+            res.render('userregistration')
+        }
+        else{
+            res.render('index',{message:response})
+        }
+    }
+    else if (role=='producers'){
+        var response=await producer_registration(name,email,password,password_confirm)
+        if(response=="Successful"){
+            res.render('producerregistration')
+        }
+        else{
+            res.render('index',{message:response})
+        }
+    }
+})
+
+app.post("/user-info", async(req,res)=>{
+    console.log(req.body)
+    res.redirect('/')
+})
+
+app.post("/producer-info",async(req,res)=>{
+    console.log(req.body)
+    res.redirect('/')
+}) 
 
 app.post("/login",(req,res)=>{
     const {email, password, } = req.body
@@ -371,6 +441,10 @@ app.get("/profile",async(req,res)=>{
     userid=sessions[session_cookie_no].user_id
 
     rows=await getUserInfo(db,userid)
+    if(rows.length==0){
+        res.render('profile')
+        return
+    }
     rows=rows[0]
     var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.Address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
     res.render('profile', {userinfo:userinfo})
