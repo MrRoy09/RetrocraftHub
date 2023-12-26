@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs")
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const { v4: uuidv4 } = require('uuid');
+const { userInfo } = require('os');
 const app = express();
 
 app.use(bodyParser.json())
@@ -37,6 +38,18 @@ class Job{
     }
 }
 
+class Userinfo{
+    constructor(name, email, phone, address , jobprofile ,previousjobs, paygrade){
+        this.name=name
+        this.email=email
+        this.phone=phone
+        this.address=address
+        this.jobprofile=jobprofile
+        this.previousjobs=previousjobs
+        this.paygrade=paygrade
+    }
+}
+
 function getJobRequests(userid,db){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * FROM job_requests WHERE userid=?"
@@ -52,7 +65,7 @@ function getJobRequests(userid,db){
     })
 }
 
-function getJobs(jobid,db){
+function getJobs(jobid,db,filters=None){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * FROM jobs WHERE jobid=?"
         var value=[[jobid]]
@@ -71,6 +84,21 @@ function getAllJobs(db){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * from jobs WHERE job_accepted=0"
         db.query(query_str,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
+function getUserInfo(db,userid){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * from user_info WHERE userid=?"
+        var value=[[userid]]
+        db.query(query_str,value,(err,res)=>{
             if(err){
                 return reject(err)
             }
@@ -214,8 +242,6 @@ app.get("/userhome",(req,res)=>{
                 }
             }
         }
-        
-        console.log(jobList)
         res.render('home',{jobList:jobList})
     })
     
@@ -291,6 +317,23 @@ app.get("/requestjob",(req,res)=>{
 })
 
 app.get("/view-requests",async (req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
     var session_cookie_no=req.cookies['session_token']
     if (!session_cookie_no){
         res.redirect('/')
@@ -303,8 +346,34 @@ app.get("/view-requests",async (req,res)=>{
         var job1 = await getJobs(rows[i].jobid,db)
         applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes))
     }
-    console.log(applications)
     res.render('JobApplications',{jobList:applications})
+})
+
+app.get("/profile",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    userid=sessions[session_cookie_no].user_id
+
+    rows=await getUserInfo(db,userid)
+    rows=rows[0]
+    var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.Address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
+    res.render('profile', {userinfo:userinfo})
 })
 
 app.get("/logout",(req,res)=>{

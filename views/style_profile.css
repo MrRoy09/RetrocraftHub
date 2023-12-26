@@ -46,20 +46,3 @@ body {
     grid-column: 2/6;
     padding-top:30px;
 }
-
-.card{
-    display:inline-block;
-    margin:3%;
-    height:auto;
-}
-
-.card-img-top{
-    max-height: 150px;
-    width:auto;
-}
-
-.jobPage-button{
-    padding:10px;
-    margin:2%;
-    width:40%;
-}
