@@ -22,6 +22,11 @@
     </head>
 
     <body>
+      {{#if message}}
+      <div class="response-message container-fluid text-center">
+        <h2>{{message}}</h2>
+      </div>
+      {{/if}}
         <div class="navbar-div">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container-fluid">
