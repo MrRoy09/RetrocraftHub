@@ -1,0 +1,63 @@
+.page-body{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+#profile-container {
+    position: relative;
+    display:inline-block;
+    height:100vh;
+    grid-column: 1/2;
+    text-align: center;
+    padding:10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: #000428;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+#profile-image {
+    display:inline;
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid brown;
+}
+
+#profile-name {
+    display:inline;
+    margin-top: 10px;
+    margin-right:20px;
+    margin-left:20px;
+    font-size: 20px;
+    font-weight: bolder;
+    color: white;
+}
+
+.nav-item{
+    padding-bottom: 40%;
+}
+
+.nav-link{
+    font-weight: bolder;
+    font-size:15px;
+}
+
+.user-content{
+    grid-column: 2/6;
+    background-color: #F7F7FF;
+    padding-top:2%;
+}
+
+.card{
+    display:inline-block;
+    margin:3%;
+    height:auto;
+    background-color:#924f3c;
+    color:white;
+}
+
+.card-img-top{
+    max-height: 200px;
+}
