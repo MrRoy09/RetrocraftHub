@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="css/reg.css"/>
+  </head>
+  
+  <body>  
+    <div class="navbar-div">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <img src="images/logo.png" class="navbar-brand navbar-logo"/>
+      </nav>
+    </div>
+    
+    <div class="gen">
+      <section class="container">
+        <header>Tell Us about Yourself</header>
+        <form action="/user-info?id={{userid}}" method="post" class="form">
+          <div class="input-box">
+            <label>Full Name</label>
+            <input name="name" type="text" placeholder="Enter full name" required />
+          </div>
+          <div class="column">
+            <div class="input-box">
+              <label>Phone Number</label>
+              <input name="phone" type="text" placeholder="Enter phone number" required />
+            </div>
+            <div class="input-box">
+              <label>Birth Date</label>
+              <input name="birthday" type="date" placeholder="Enter birth date" required />
+            </div>
+          </div>
+          <div class="gender-box">
+            <h3>Gender</h3>
+            <div class="gender-option">
+              <div class="gender">
+                <input type="radio" id="check-male" name="gender" value="male" checked />
+                <label for="check-male">Male</label>
+              </div>
+              <div class="gender">
+                <input type="radio" id="check-female" name="gender" value="female" />
+                <label for="check-female">Female</label>
+              </div>
+              <div class="gender">
+                <input type="radio" id="check-other" name="gender" value="other" />
+                <label for="check-other">Other</label>
+              </div>
+            </div>
+          </div>
+          <div class="input-box address">
+            <label>Address</label>
+            <input name ="address" type="text" placeholder="Enter address" required />
+          </div>
+          <div class="input-box">
+            <label for="jobProfile"> Job Profile </label>
+            <div class="select-box">
+              <select name="job_profile" id="jobProfile" multiple>
+                <option value="Director">Director</option>
+                <option value="Artist">Artist</option>
+                <option value="Video_Editor">Video-editor</option>
+                <option value="Spotboy">Spotboy</option>
+                <option value="Misc">Misc</option>
+              </select>
+            </div>
+          </div>
+          <div class="big-box">
+            <label for="About"> About You </label>
+            <textarea name="about" placeholder="About You"></textarea>
+          </div>
+          <div class="big-box">
+            <label for="Previous Experience"> Previous Experience </label>
+            <textarea name="previous_jobs" placeholder="Your Past jobs"></textarea>
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+      </section>
+    </div>
+
+    <div class="footer">
+      <link rel="stylesheet" href="css/footer.css">
+      <footer>
+        <div class="main-content">
+          <div class="left box">
+            <h2>About us</h2>
+            <div class="content">
+              <p>We are group of students aiming to submit this project as soom as possible and get this site working. Also i hate frontend now, I cant do this anymore this is toooooo long and tedious, tho at least it looks good</p>
+              <div class="social">
+                <a href="https://facebook.com/coding.np"><span class="fab fa-facebook-f"></span></a>
+                <a href="#"><span class="fab fa-twitter"></span></a>
+                <a href="https://instagram.com/coding.np"><span class="fab fa-instagram"></span></a>
+                <a href="https://youtube.com/c/codingnepal"><span class="fab fa-youtube"></span></a>
+              </div>
+            </div>
+          </div>
+          <div class="center box">
+            <h2>Address</h2>
+            <div class="content">
+              <div class="place">
+                <span class="fas fa-map-marker-alt"></span>
+                <span class="text">IIT roorkee</span>
+              </div>
+              <div class="phone">
+                <span class="fas fa-phone-alt"></span>
+                <span class="text">+91-0000000000</span>
+              </div>
+              <div class="email">
+                <span class="fas fa-envelope"></span>
+                <span class="text">abc@example.com</span>
+              </div>
+            </div>
+          </div>
+          <div class="right box">
+            <h2>Contact us</h2>
+            <div class="content">
+              <form action="#">
+                <div class="email">
+                  <div class="text">Email *</div>
+                  <input type="email" required>
+                </div>
+                <div class="msg">
+                  <div class="text">Message *</div>
+                  <textarea rows="2" cols="25" required></textarea>
+                </div>
+                <div class="btn1">
+                  <button type="submit">Send</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="bottom">
+          <center>
+            <span class="credit">Created By <a href="https://www.google.com/search?&q=cats">Dog in a box Studio</a> | </span>
+            <span class="far fa-copyright"></span><span> 2023 All rights reserved.</span>
+          </center>
+        </div>
+      </footer>        
+    </div>
+    
+  </body>
+</html>

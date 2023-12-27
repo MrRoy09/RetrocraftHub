@@ -50,6 +50,127 @@ class Userinfo{
     }
 }
 
+function user_registration(name,email,password,password_confirm){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM  users WHERE email=?;"
+        var values=[email]
+        db.query(query_str,values,async (err,result)=>{
+            if(err){
+                return reject(err)
+            }
+
+            if(result.length!=0){
+                return resolve(['User already Exists'])
+            }
+
+            if(password!=password_confirm){
+                return resolve(['Passwords Dont Match'])
+            }
+            var insert_query="INSERT INTO users (name,email,password) VALUES ?;"
+            var hashedPassword = await bcrypt.hash(password, 8)
+            var value=[[name,email, hashedPassword]]
+            db.query(insert_query,[value],(err,result2)=>{
+                if (err){
+                    return reject(['Error Occured in DB'])
+                }
+                else{
+                    return resolve(["Successful",result2.insertId])
+                }
+            })
+        })
+    })
+}
+
+function producer_registration(name,email,password,password_confirm){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM producers WHERE email=?;"
+        var values=[email]
+        db.query(query_str,values,async (err,result)=>{
+            if(err){
+                return reject(err)
+            }
+
+            if(result.length!=0){
+                return resolve('User already Exists')
+            }
+
+            if(password!=password_confirm){
+                return resolve('Passwords Dont Match')
+            }
+            var insert_query="INSERT INTO producers (name,email,password) VALUES ?;"
+            var hashedPassword = await bcrypt.hash(password, 8)
+            var value=[[name,email, hashedPassword]]
+            db.query(insert_query,[value],(err,result2)=>{
+                if (err){
+                    return reject('Error Occured in DB')
+                }
+                else{
+                    return resolve(["Successful",result2.insertId])
+                }
+            })
+        })
+    })
+}
+
+function getEmailFromId(type,id){
+    return new Promise(function(resolve,reject){
+        if(type==1){
+            query_str='SELECT email from users where userid=?;'
+            value=[[id]]
+            db.query(query_str,value,(err,res)=>{
+                if(err){
+                    return reject(err)
+                }
+                else{
+                    return resolve(res)
+                }
+            })
+        }
+        else if (type==2){
+            query_str="select email from producers where producerid=?";
+            value=[[id]]
+            db.query(query_str,value,(err,res)=>{
+                if(err){
+                    return reject(err)
+                }
+                else{
+                    return resolve(res)
+                }
+            })
+        }
+    })
+}
+
+function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,profile_image='images/default'){
+    return new Promise(function(resolve,reject){
+        var query_str="INSERT INTO user_info VALUES ?"
+        values=[[userid,name,email,phone,address,about,previousjobs,jobprofile,profile_image]]
+        db.query(query_str,[values],(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve("Success")
+            }
+        })
+    })
+}
+
+function producer_info_insert(id,name,email,phone,gender,address,about,profile_image='images/default'){
+    return new Promise(function(resolve,reject){
+        var query_str="INSERT INTO producer_info VALUES ?"
+        values=[[id,name,email,phone,gender,address,about,profile_image]]
+        db.query(query_str,[values],(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve("Success")
+            }
+        })
+    })
+}
+
 function getJobRequests(userid,db){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * FROM job_requests WHERE userid=?"
@@ -128,34 +249,61 @@ app.get("/", (req, res) => {
     res.render("index")
 })
 
-app.post("/signup", (req, res) => {   
-    const {email, password, password_confirm} = req.body
-    check_query = "SELECT * from users WHERE Email=?;"
-    let user_email =[[email]]
-    db.query(check_query,user_email,async(err,result)=>{
-        if(err){
-            console.log(err)
-        }
-        if (result.length!=0){
-            return res.render('index',{message:'Email already Registered'})
-        }
-        if (password!=password_confirm){
-            return res.render('index',{message:'passwords dont match'})
-        }
-        insert_query="INSERT INTO users (name,email,password) VALUES ?;"
-        var hashedPassword = await bcrypt.hash(password, 8)
-        var value=[['user',email, hashedPassword]]
-        db.query(insert_query,[value],(err,result2)=>{
-            if (err){
-                console.log(err)
-            }
-            else{
-                console.log("Registration successful")
-                return res.render('index',{message:'User Registration Successful!'})
-            }
-        })
-    })
+app.get("/onboard",(req,res)=>{
+    res.render('onboard')
 })
+
+
+app.post("/signup", async(req, res) => {   
+    const {name,email, password, password_confirm,role} = req.body
+    if(role=='users'){
+        var response=await user_registration(name,email,password,password_confirm)
+        if(response[0]=="Successful"){
+            res.render('userregistration',{userid:response[1]})
+        }
+        else{
+            res.render('index',{message:response})
+        }
+    }
+    else if (role=='producers'){
+        var response=await producer_registration(name,email,password,password_confirm)
+        if(response[0]=="Successful"){
+            res.render('producerregistration',{producerid:response[1]})
+        }
+        else{
+            res.render('index',{message:response})
+        }
+    }
+})
+
+app.post("/user-info", async(req,res)=>{
+    const userid=req.query.id
+    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs}=req.body
+    var email= await getEmailFromId(1,userid)
+    email=email[0].email
+    var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
+    if(response=="Success"){
+        res.render('index',{message:"Successfully Registered, please Log in"})
+    }
+    else{
+        res.render('index',{message:"Error, please contact adminstrator"})
+    }
+})
+
+app.post("/producer-info",async(req,res)=>{
+    const producerid=req.query.id
+    const {name,phone,birthday,gender,address,about}= req.body
+    var email=await getEmailFromId(2,producerid)
+    email=email[0].email
+    var response=await producer_info_insert(producerid,name,email,phone,gender,address,about)
+    if(response=="Success"){
+        res.render('index',{message:"Successfully registered, please log in"})
+    }
+    else{
+        res.render('index',{message:'error occured, please contact admin'})
+    }
+    return
+}) 
 
 app.post("/login",(req,res)=>{
     const {email, password, } = req.body
@@ -242,7 +390,7 @@ app.get("/userhome",(req,res)=>{
                 }
             }
         }
-        res.render('home',{jobList:jobList})
+        res.render('userhome',{jobList:jobList})
     })
     
 })
@@ -277,7 +425,7 @@ app.get("/job-page",async (req,res)=>{
         jobList.push(new Job(rows[i].jobid,rows[i].jobname,rows[i].jobdes))
     }
     
-    res.render('jobPage',{jobList:jobList})
+    res.render('userjobPage',{jobList:jobList})
     return
 })
     
@@ -346,7 +494,7 @@ app.get("/view-requests",async (req,res)=>{
         var job1 = await getJobs(rows[i].jobid,db)
         applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes))
     }
-    res.render('JobApplications',{jobList:applications})
+    res.render('userjobapplications',{jobList:applications})
 })
 
 app.get("/profile",async(req,res)=>{
@@ -371,9 +519,13 @@ app.get("/profile",async(req,res)=>{
     userid=sessions[session_cookie_no].user_id
 
     rows=await getUserInfo(db,userid)
+    if(rows.length==0){
+        res.render('profile')
+        return
+    }
     rows=rows[0]
     var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.Address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
-    res.render('profile', {userinfo:userinfo})
+    res.render('userprofile', {userinfo:userinfo})
 })
 
 app.get("/logout",(req,res)=>{
