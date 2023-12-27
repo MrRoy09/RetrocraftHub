@@ -4,19 +4,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join Us Today!</title>
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="css/reg.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   </head>
   
   <body>  
     <div class="navbar-div">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-          <img src="images/logo.png" class="navbar-brand navbar-logo"/>
-      </nav>
+          <div class="container-fluid">
+            <img src="images/logo.png" class="navbar-brand navbar-logo"/>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+          </div>
+        </nav>
     </div>
     
     <div class="gen">
-      <section class="container">
+      <section class="container1">
         <header>Tell Us about Yourself</header>
         <form action="/producer-info?id={{producerid}}" method="post" class="form">
           <div class="input-box">
@@ -56,7 +63,11 @@
           </div>
           <div class="big-box">
             <label for="About"> About You </label>
-            <textarea name="about" placeholder="About You"></textarea>
+            <textarea name="about" placeholder="About You" required></textarea>
+          </div>
+          <div class="photo">
+            <label for="pfp">Upload Profile Picture: </label> <br>
+            <input type="file" id="pfp" name="profile_image">
           </div>
           <button type="submit">Submit</button>
         </form>

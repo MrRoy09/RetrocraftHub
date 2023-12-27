@@ -22,16 +22,16 @@
   padding: 20px;
   background: linear-gradient(90deg, rgb(63, 56, 201), rgba(0,212,255,1) 100%);
 }
-.container {
+.container1 {
   position: relative;
-  max-width: 700px;
+  max-width: 800px;
   width: 100%;
   background: #fff;
   padding: 25px;
-  border-radius: 8px;
+  border-radius: 15px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
-.container header {
+.container1 header {
   position: relative;
   font-size: 27px;
   font-weight: 600;
@@ -46,7 +46,7 @@ header::before{
   background-color: #4070f4;
   border-radius: 25px;
 }
-.container .form {
+.container1 .form {
   margin-top: 10px;
 }
 .form .input-box {
@@ -161,17 +161,32 @@ header::before{
 .big-box input:focus {
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
+.form .photo{
+  width: 100%;
+  margin-top: 20px;
+}
+.photo label{
+  color: #333;
+}
+.photo input{
+  border: 1px solid #ddd;
+  color: #727070;
+  width: 100%;
+  border-radius: 6px;
+}
 .form button {
   height: 55px;
   width: 100%;
   color: #fff;
-  font-size: 1rem;
+  font-size: 17px;
   font-weight: 400;
   margin-top: 30px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
   background: rgb(54, 13, 255);
+  border-radius: 6px;
+  transition: all 0.3 ease;
 }
 .form button:hover {
   background: #4750ff;
