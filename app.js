@@ -637,7 +637,7 @@ app.get("/producerprofile",async(req,res)=>{
     }
     rows=rows[0]
     var producerinfo=new ProducerInfo(rows.name,rows.email,rows.phone,rows.address,rows.about)
-    console.log(producerinfo)
+    res.render('producerprofile',{userinfo:producerinfo})
 
 })
 
