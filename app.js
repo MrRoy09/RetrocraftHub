@@ -17,6 +17,7 @@ app.set('view engine', 'hbs')
 app.use(express.static("views"));
 
 const sessions = {}
+const psessions={}
 
 class Session {
     constructor(username,name,user_id) {
@@ -47,6 +48,16 @@ class Userinfo{
         this.jobprofile=jobprofile
         this.previousjobs=previousjobs
         this.paygrade=paygrade
+    }
+}
+
+class ProducerInfo{
+    constructor(name,email,phone,address,about){
+        this.name=name
+        this.email=email
+        this.phone=phone
+        this.address=address
+        this.about=about
     }
 }
 
@@ -144,7 +155,7 @@ function getEmailFromId(type,id){
 function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,profile_image='images/default'){
     return new Promise(function(resolve,reject){
         var query_str="INSERT INTO user_info VALUES ?"
-        values=[[userid,name,email,phone,address,about,previousjobs,jobprofile,profile_image]]
+        values=[[userid,name,email,phone,gender,address,about,previousjobs,jobprofile,profile_image]]
         db.query(query_str,[values],(err,res)=>{
             if(err){
                 return reject(err)
@@ -230,6 +241,21 @@ function getUserInfo(db,userid){
     })
 }
 
+function getproducerinfo(db,producerid){
+    return new Promise(function(resolve,reject){
+        var query_str="Select * from producer_info where producerid=?"
+        var value=[[producerid]]
+        db.query(query_str,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
 const db = mysql.createConnection({
     host: 'localhost',
     port: 3307,
@@ -278,7 +304,8 @@ app.post("/signup", async(req, res) => {
 
 app.post("/user-info", async(req,res)=>{
     const userid=req.query.id
-    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs}=req.body
+    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs,profile_image}=req.body
+    console.log(profile_image)
     var email= await getEmailFromId(1,userid)
     email=email[0].email
     var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
@@ -306,7 +333,8 @@ app.post("/producer-info",async(req,res)=>{
 }) 
 
 app.post("/login",(req,res)=>{
-    const {email, password, } = req.body
+    const {email, password, role} = req.body
+    if(role=="users"){
     check_query = "SELECT * from users WHERE email=?;"
     let user_email =[[email]]
     db.query(check_query,user_email,async(err,result)=>{
@@ -338,8 +366,41 @@ app.post("/login",(req,res)=>{
             
         }
     })
+    }
 
-
+    else if(role=='producers'){
+        check_query = "SELECT * from producers WHERE email=?;"
+        let user_email =[[email]]
+        db.query(check_query,user_email,async(err,result)=>{
+        if (err){
+            console.log(err)
+        }
+        else{
+            if (result.length==0){
+                res.render('index',{message:'Email not registered'})
+            }
+            else{
+                password_check=await bcrypt.compare(password,result[0].password)
+                if(!password_check){
+                    
+                    res.render('index',{message:'Wrong Password'})
+                }
+                else{
+                    username=result[0].name
+                    user_id=result[0].producerid
+                    const sessionToken = uuidv4()
+                    const now = new Date()
+                    const session = new Session(email,username,user_id)
+                    psessions[sessionToken] = session
+                    res.cookie("session_token", sessionToken)
+                    res.redirect("/producerhome")
+                    res.end()
+                }
+            }
+            
+        }
+    })
+    }
 })
 
 app.get("/userhome",(req,res)=>{
@@ -393,6 +454,59 @@ app.get("/userhome",(req,res)=>{
         res.render('userhome',{jobList:jobList})
     })
     
+})
+
+app.get("/producerhome",(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    if (!producerSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    user_name=psessions[session_cookie_no].name
+    userid=psessions[session_cookie_no].user_id
+    query='SELECT * FROM jobs WHERE producerid=?'
+    values=[[userid]]
+    db.query(query,values,(err,result)=>{
+        jobList=[]
+        if (result.length==0){
+            var image='images/director.jpg'
+            job=new Job(0,'Nothing Yet','Use the create job option to create a job posting',image)
+            jobList.push(job)
+        }
+        else{
+            for (var i=0;i<result.length;i++){
+                if(result[i].jobname=='Director'){
+                    var image='images/director.jpg'
+                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
+                    jobList.push(job)
+                }
+                else if (result[i].jobname=='Makeup Artist'){
+                    var image='images/makeup.jpg'
+                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
+                    jobList.push(job)
+                }
+                else{
+                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription)
+                    jobList.push(job)
+                }
+            }
+        }
+        res.render('producerhome',{jobList:jobList})
+    })
+
 })
 
 app.get("/job-page",async (req,res)=>{
@@ -497,6 +611,36 @@ app.get("/view-requests",async (req,res)=>{
     res.render('userjobapplications',{jobList:applications})
 })
 
+app.get("/producerprofile",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    if (!producerSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    var producerid=psessions[session_cookie_no].user_id
+    rows=await getproducerinfo(db,producerid)
+    if(rows.length==0){
+        return
+    }
+    rows=rows[0]
+    var producerinfo=new ProducerInfo(rows.name,rows.email,rows.phone,rows.address,rows.about)
+    res.render('producerprofile',{userinfo:producerinfo})
+
+})
+
 app.get("/profile",async(req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
@@ -520,17 +664,18 @@ app.get("/profile",async(req,res)=>{
 
     rows=await getUserInfo(db,userid)
     if(rows.length==0){
-        res.render('profile')
+        res.render('userprofile')
         return
     }
     rows=rows[0]
-    var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.Address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
+    var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
     res.render('userprofile', {userinfo:userinfo})
 })
 
 app.get("/logout",(req,res)=>{
     const sessionToken = req.cookies['session_token']
     delete sessions[sessionToken]
+    delete psessions[sessionToken]
     res.redirect('/')
 })
 
