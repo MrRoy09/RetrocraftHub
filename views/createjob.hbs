@@ -45,26 +45,26 @@
         </div>
         {{/if}}
                 <h3 style="text-align:center;">Create a Job Posting</h3>
-                <form id="jobCreateForm" class="jobCreateForm" method="post" action="/newJobPosting">
+                <form id="jobCreateForm" class="jobCreateForm" method="post" action="/newJobPosting" style="width: 100%;">
                     <div class="form-group">
                         <label for="jobname">Name</label>
-                        <input name="jobname" type="text" class="form-control" id="jobname" placeholder="Give your posting a suitable name">
+                        <input name="jobname" type="text" class="form-control" id="jobname" placeholder="Give your posting a suitable name" required> 
                     </div>
                     <div class="form-group">
                         <label for="jobdes">Job Description</label>
-                        <input name="jobdes" class="form-control" type="text" id="jobdes" placeholder="Enter a brief description">
+                        <textarea name="jobdes" class="form-control" type="text" id="jobdes" placeholder="Enter a brief description" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="jobskills">Required Skills</label>
-                        <input name="jobskills" class="form-control" type="text" id="jobskills" placeholder="What skills are you looking for?">
+                        <input name="jobskills" class="form-control" type="text" id="jobskills" placeholder="What skills are you looking for?" required>
                     </div>
                     <div class="form-group">
                         <label for="jobdetails">Job Details</label>
-                        <textarea form="jobCreateForm" id="jobdetails" name="jobdetails" class="form-control" rows="3" placeholder="Provide as many details as possible"></textarea>
+                        <textarea form="jobCreateForm" id="jobdetails" name="jobdetails" class="form-control" rows="3" placeholder="Provide as many details as possible" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="jobprofiles">Select Eligible Job Profiles</label>
-                        <select multiple class="form-control" id="jobprofiles" name="jobprofiles">
+                        <select class="form-control" id="jobprofiles" name="jobprofiles" required>
                             <option value="direction">Direction</option>
                             <option value="music_composition">Music composition</option>
                             <option value="makeup">Makeup</option>
@@ -74,7 +74,7 @@
                     </div>
                     <div class="form-group">
                         <label for="time">Expected time</label>
-                        <select class="form-control" id="time" name="time">
+                        <select class="form-control" id="time" name="time" required>
                             <option value="1_2months">1 - 2 months</option>
                             <option value="2_4months">2-4 months</option>
                             <option value="4_6months">4-6 months</option>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="form-group">
                         <label for="paygrade">Expected Pay</label>
-                        <input type="text" id="paygrade" name="pay" class="form-control" placeholder="Mention the expected pay">
+                        <input type="text" id="paygrade" name="pay" class="form-control" placeholder="Mention the expected pay" required>
                     </div>
                     <button class="btn btn-success" type="submit">Submit</button>
                 </form>
