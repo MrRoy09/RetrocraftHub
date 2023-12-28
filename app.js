@@ -256,7 +256,7 @@ function getJobRequests(userid,db){
     })
 }
 
-function getJobs(jobid,db,filters=None){
+function getJobs(jobid,db,filter=null){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * FROM jobs WHERE jobid=?"
         var value=[[jobid]]
