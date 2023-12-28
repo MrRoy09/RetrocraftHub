@@ -315,6 +315,22 @@ function getproducerinfo(db,producerid){
     })
 }
 
+function getproducerjob(db,producerid){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * from jobs where producerid=?"
+        var value=[[producerid]]
+        db.query(query_str,value,(err,res)=>{
+            if(err){
+                console.log(err)
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
 app.get("/", (req, res) => {
     res.render("index")
 })
@@ -369,14 +385,16 @@ app.post("/user-info", upload.single('profile_image'), async(req,res)=>{
 app.post("/producer-info",async(req,res)=>{
     const producerid=req.query.id
     const {name,phone,birthday,gender,address,about}= req.body
+    console.log(name,phone,birthday,gender,address,about)
     var email=await getEmailFromId(2,producerid)
     email=email[0].email
     if(req.file){
-        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,req.file.path)
+        var response=await producer_info_insert(producerid,name,email,phone,gender,address,about,req.file.path)
     }
     else{
-        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
+        var response=await producer_info_insert(producerid,name,email,phone,gender,address,about)
     }
+
     if(response=="Success"){
         res.render('index',{message:"Successfully registered, please log in"})
     }
@@ -700,14 +718,22 @@ app.get("/producerprofile",async(req,res)=>{
     }
     var session_cookie_no=req.cookies['session_token']
     var producerid=psessions[session_cookie_no].user_id
-    rows=await getproducerinfo(db,producerid)
-    if(rows.length==0){
+    var producer_info_row=await getproducerinfo(db,producerid)
+    var producer_jobs=await getproducerjob(db,producerid)
+    var joblist=[]
+    for(var i=0;i<producer_jobs.length;i++){
+        row=producer_jobs[i]
+        job=new Job(row.jobid,row.jobname,row.jobdes)
+        joblist.push(job)
+    }
+    
+
+    if(producer_info_row.length==0){
         return
     }
-    rows=rows[0]
-    var producerinfo=new ProducerInfo(rows.name,rows.email,rows.phone,rows.address,rows.about)
-    res.render('producerprofile',{userinfo:producerinfo})
-
+    producer_info_row=producer_info_row[0]
+    var producerinfo=new ProducerInfo(producer_info_row.name,producer_info_row.email,producer_info_row.phone,producer_info_row.address,producer_info_row.about)
+    res.render('producerprofile',{userinfo:producerinfo,joblist:joblist})
 })
 
 app.get("/profile",async(req,res)=>{

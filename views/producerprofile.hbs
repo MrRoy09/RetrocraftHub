@@ -8,6 +8,7 @@
         <title>Boxy</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Mono&family=Roboto:wght@500&display=swap" rel="stylesheet">
     </head>
     <body>
@@ -25,7 +26,7 @@
                                 <a class="nav-link" href="/producerprofile">Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/view-requests">Recieved Requests</a>
+                                <a class="nav-link" href="#">Recieved Requests</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/createJob">Make A Job Posting</a>
@@ -83,9 +84,38 @@
                         </div>
                     </div>
                     </div>
+                    <div class="current-job">
+                      <h3 style="text-align:center;">Your Jobs</h3>
+                      <table class="table table-light table-striped text-center">
+                        <thead>
+                          <tr class="text-center">
+                          <th scope="col">ID</th>
+                          <th scope="col">Jobname</th>
+                          <th scope="col">JobDes</th>
+                          <th scope="col">Date Created</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {{#each joblist}}
+                          <tr>
+                            <th scope="col">{{this.jobid}}</th>
+                            <th scope="col">{{this.jobname}}</th>
+                            <th scope="col">{{this.jobdes}}</th>
+                            <th scope="col">19/20/2023</th>
+                          </tr>
+                          {{/each}}
+                        </tbody>
+                        
+                        
+                        
+
+                      </table>
+                    </div>
                 </div>
+              </div>
             </div>
-        </div>
+
+        
     </div>
 
     <script src="" async defer></script>
