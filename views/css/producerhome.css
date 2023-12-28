@@ -1,19 +1,20 @@
 .page-body{
     display:grid;
     grid-template-columns: repeat(5, 1fr);
-    column-gap: 10px;
 }
 #profile-container {
-    position: relative;
+    position: fixed;
     display:inline-block;
-    height:100vh;
+    height:100%;
+    width: 20%;
     grid-column: 1/2;
     text-align: center;
     padding:10px;
-    background-color: #fff;
+    background-color:aliceblue;
     border-radius: 0 15px 15px 0;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;background: #000428;  /* fallback for old browsers */
+    overflow: hidden;
+    background: #000428;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right,rgb(63, 56, 201), rgb(0, 157, 255) 100%);  /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to bottom,rgb(63, 56, 201), rgb(0, 157, 255) 100%); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
@@ -42,24 +43,40 @@
 
 .nav-link{
     font-size:15px;
-}
-
+}   
 
 .user-content{
-    position: relative;
+    position:relative;
     grid-column: 2/6;
-    background-color: #F7F7FF;
-    padding-top:2%;
+    padding: 3%;
+    height: 100%;
+    width: 100%;
+}
+
+.header-title{
+    font-family: 'Roboto' sans-serif;
+    text-align:auto; 
+    padding: 2%;
+    color:rgb(97, 0, 0);
 }
 
 .card{
     display:inline-block;
     margin:3%;
     height:auto;
-    background-color:#924f3c;
+    background-color:#d56d12;
     color:white;
+    border-radius: 20px;
 }
 
 .card-img-top{
     max-height: 200px;
+
+}
+
+.jobPage-button{
+    padding:10px;
+    margin:2%;
+    width:40%;
+    border-radius: 10px;
 }
