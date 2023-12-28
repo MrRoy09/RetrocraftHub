@@ -76,7 +76,7 @@ class ProducerInfo{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
@@ -326,6 +326,22 @@ function getproducerjob(db,producerid){
             }
             else{
                 return resolve(res)
+            }
+        })
+    })
+}
+
+function newJob(db,id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay){
+    return new Promise(function(resolve,reject){
+        var query_str="insert into jobs (producerid,jobname,jobdes,skills,profiles,details,time,pay) values?;"
+        var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay]]
+        db.query(query_str,[values],(err,res)=>{
+            if(err){
+                console.log(err)
+                return reject([err])
+            }
+            else{
+                return resolve(['Success',res.insertId])
             }
         })
     })
@@ -718,6 +734,9 @@ app.get("/producerprofile",async(req,res)=>{
     }
     var session_cookie_no=req.cookies['session_token']
     var producerid=psessions[session_cookie_no].user_id
+    var user_name=psessions[session_cookie_no].name
+    var pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
     var producer_info_row=await getproducerinfo(db,producerid)
     var producer_jobs=await getproducerjob(db,producerid)
     var joblist=[]
@@ -733,7 +752,7 @@ app.get("/producerprofile",async(req,res)=>{
     }
     producer_info_row=producer_info_row[0]
     var producerinfo=new ProducerInfo(producer_info_row.name,producer_info_row.email,producer_info_row.phone,producer_info_row.address,producer_info_row.about)
-    res.render('producerprofile',{userinfo:producerinfo,joblist:joblist})
+    res.render('producerprofile',{userinfo:producerinfo,joblist:joblist,profile_image:pfp,name:user_name})
 })
 
 app.get("/profile",async(req,res)=>{
@@ -768,6 +787,70 @@ app.get("/profile",async(req,res)=>{
     rows=rows[0]
     var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
     res.render('userprofile', {userinfo:userinfo,profile_image:pfp,name:user_name})
+})
+
+app.get("/createjob",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    if (!producerSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    user_name=psessions[session_cookie_no].name
+    userid=psessions[session_cookie_no].user_id
+    pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    if(req.query){
+        if(req.query.response==0){
+            res.render('createjob',{profile_image:pfp,name:user_name,message:"Successfully Created Posting"})
+        }
+        else if(req.query.response==1){
+            res.render('createjob',{profile_image:pfp,name:user_name,message:"Failed to Create Posting"})
+        }
+    }
+    
+    res.render('createjob',{profile_image:pfp,name:user_name})
+})
+
+app.post("/newJobPosting",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    if (!producerSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    user_name=psessions[session_cookie_no].name
+    userid=psessions[session_cookie_no].user_id
+    const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
+    var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay)
+    if(response[0]=='Success'){
+        res.redirect('/createjob?response=0')
+    }
+    else(res.redirect('/createjob?response=1'))
 })
 
 app.get("/logout",(req,res)=>{
