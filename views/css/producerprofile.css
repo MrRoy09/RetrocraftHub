@@ -43,3 +43,9 @@
 .nav-link{
     font-size:15px;
 }
+
+.profile-information{
+    grid-column: 2/6;
+    padding:5%;
+    font-family: 'Roboto',sans-serif;
+}

@@ -351,7 +351,13 @@ app.post("/user-info", upload.single('profile_image'), async(req,res)=>{
     const {name,phone,birthday,gender,address,job_profile,about,previous_jobs}=req.body
     var email= await getEmailFromId(1,userid)
     email=email[0].email
-    var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,req.file.path)
+    if(req.file){
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,req.file.path)
+    }
+    else{
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
+    }
+    
     if(response=="Success"){
         res.render('index',{message:"Successfully Registered, please Log in"})
     }
@@ -365,7 +371,12 @@ app.post("/producer-info",async(req,res)=>{
     const {name,phone,birthday,gender,address,about}= req.body
     var email=await getEmailFromId(2,producerid)
     email=email[0].email
-    var response=await producer_info_insert(producerid,name,email,phone,gender,address,about)
+    if(req.file){
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,req.file.path)
+    }
+    else{
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
+    }
     if(response=="Success"){
         res.render('index',{message:"Successfully registered, please log in"})
     }
