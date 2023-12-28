@@ -42,7 +42,7 @@ class Session {
 }
 
 class Job{
-    constructor(jobid,jobname,jobdes,image='images/director.jpg',isRequested=0){
+    constructor(jobid,jobname,jobdes,image='images/director.png',isRequested=0){
         this.jobid=jobid
         this.jobname=jobname
         this.jobdes=jobdes
@@ -76,7 +76,7 @@ class ProducerInfo{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3307,
+    port: 3701,
     user: 'root',
     database: 'master-db',
 })
@@ -506,19 +506,19 @@ app.get("/userhome",async (req,res)=>{
     db.query(query,values,(err,result)=>{
         jobList=[]
         if (result.length==0){
-            var image='images/director.jpg'
+            var image='images/director.png'
             job=new Job(0,'Nothing Yet','Keep Looking Champ',image)
             jobList.push(job)
         }
         else{
             for (var i=0;i<result.length;i++){
                 if(result[i].jobname=='Director'){
-                    var image='images/director.jpg'
+                    var image='images/director.png'
                     job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
                     jobList.push(job)
                 }
                 else if (result[i].jobname=='Makeup Artist'){
-                    var image='images/makeup.jpg'
+                    var image='images/makeup.png'
                     job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
                     jobList.push(job)
                 }
@@ -563,19 +563,19 @@ app.get("/producerhome",async (req,res)=>{
     db.query(query,values,(err,result)=>{
         jobList=[]
         if (result.length==0){
-            var image='images/director.jpg'
+            var image='images/director.png'
             job=new Job(0,'Nothing Yet','Use the create job option to create a job posting',image)
             jobList.push(job)
         }
         else{
             for (var i=0;i<result.length;i++){
                 if(result[i].jobname=='Director'){
-                    var image='images/director.jpg'
+                    var image='images/director.png'
                     job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
                     jobList.push(job)
                 }
                 else if (result[i].jobname=='Makeup Artist'){
-                    var image='images/makeup.jpg'
+                    var image='images/makeup.png'
                     job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
                     jobList.push(job)
                 }

@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Mono&family=Roboto:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div class="page-body">
     <div id="profile-container">
         <img id="profile-image" src="{{profile_image}}" alt="Profile Image" class="img-fluid">
@@ -41,7 +40,7 @@
     
     <div class="user-content">
         <div class="current-jobs">
-            <h2 style="font-family: 'Roboto',sans-serif; text-align:center;">Your Jobs</h2>
+            <h2 class="header-title">Current Jobs</h2>
             
             {{#each jobList}}
             <div class="card" style="width: 18rem; text-align:center;">
@@ -49,7 +48,7 @@
                 <div class="card-body">
                   <h5 class="card-title">{{this.jobname}}</h5>
                   <p class="card-text">{{this.jobdes}}</p>
-                  <a href="#" class="btn btn-primary">Job Details</a>
+                  <a href="#" class="btn btn-primary jobPage-button">Job Details</a>
                 </div>
             </div>
             {{/each}}
