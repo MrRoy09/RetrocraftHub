@@ -4,186 +4,194 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Retro-Craft Hub</title>
+    <title>Retro-Craft Hub: Login</title>
     <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="css/onboard.css">
 </head>
 
 <body>
   <div class="navbar-div">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
           <img src="images/logo.png" class="navbar-brand navbar-logo"/>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
       </nav>
-    </div>
+  </div>
 
-    <div class="gen">
-        <div class="container">
-            <div class="forms">
-
-                <!--Login Form-->
-                <div class="form login">
-                    <span class="title">Login</span>
-                    <form action="/login" method="post">
-                        
-                        <div class="input-field">
-                            <input name="email" type="text" placeholder="Enter your email" required>
-                            <i class="uil uil-envelope icon"></i>
-                        </div>
-                        
-                        <div class="input-field">
-                            <input name ="password" type="password" class="password" placeholder="Enter your password" required>
-                            <i class="uil uil-lock icon"></i>
-                            <i class="uil uil-eye-slash showHidePw"></i>
-                        </div>
-                        <div class="role-option">
+  <div class="gen">
+    <div class="container">
+        <div class="forms">
+            <!--Login Form-->
+            <div class="form login">
+                <span class="title">Login</span>
+                <form action="/login" method="post">
+                  <div class="input-field">
+                    <input name="email" type="email" placeholder="Enter your email" required>
+                    <i class="uil uil-envelope icon"></i>
+                  </div>
+                    
+                  <div class="input-field">
+                    <input name ="password" type="password" class="password" placeholder="Enter your password" required>
+                    <i class="uil uil-lock icon"></i>
+                    <i class="uil uil-eye-slash showHidePw"></i>
+                  </div>
+                    
+                  <div class="role-box" style="margin-top: 30px;">
+                    <h3> Sign-In as: </h3>
+                    <div class="role-option">
                       <div class="role">
-                <input type="radio" id="check-Producer" name="role" value="producers" />
-                <label for="check-Producer">Producer</label>
+                        <input type="radio" id="check-Producer" name="role" value="producers" required />
+                        <label for="check-Producer">Producer</label>
                       </div>
-                    <div class="role">
-                <input type="radio" id="check-Freelancer" name="role" value="users"/>
-                <label for="check-Freelancer">Freelancer</label>
+                      <div class="role">
+                        <input type="radio" id="check-Freelancer" name="role" value="users" required/>
+                        <label for="check-Freelancer">Freelancer</label>
+                      </div>
                     </div>
-                </div>
+                  </div>
 
-                        <div class="checkbox-text">
-                            <div class="checkbox-content">
-                                <input type="checkbox" id="logCheck">
-                                <label for="logCheck" class="text">Remember me</label>
-                            </div>
-                            
-                            <a href="#" class="text">Forgot password?</a>
+                    <div class="checkbox-text">
+                        <div class="checkbox-content">
+                            <input type="checkbox" id="logCheck">
+                            <label for="logCheck" class="text">Remember me</label>
                         </div>
                         
-                        <div class="input-field button">
-                            <input type="submit" value="Login">
-                        </div>
-                    </form>
-                    <div class="login-signup">
-                        <span class="text">Not a member?
-                            <a href="#" class="text signup-link">Signup Now</a>
-                        </span>
+                        <a href="#" class="text">Forgot password?</a>
                     </div>
-                </div>
-
-                <!-- Sign-Up Form -->
-                <div class="form signup">
-                    <span class="title">Sign-Up</span>
-                    <form action="/signup" method="post">
-                        <div class="input-field">
-                            <input name="name" type="text" placeholder="Enter your name" required>
-                            <i class="uil uil-user"></i>
-                        </div>
-                        <div class="input-field">
-                            <input name="email" type="text" placeholder="Enter your email" required>
-                            <i class="uil uil-envelope icon"></i>
-                        </div>
-                        <div class="input-field">
-                            <input name="password" type="password" class="password" placeholder="Create a password" required>
-                            <i class="uil uil-lock icon"></i>
-                            <i class="uil uil-eye-slash showHidePw"></i>
-                        </div>
-                        <div class="input-field">
-                            <input name="password_confirm" type="password" class="password" placeholder="Confirm password" required>
-                            <i class="uil uil-lock icon"></i>
-                            <i class="uil uil-eye-slash showHidePw"></i>
-                        </div>
-                        <div class="role-box">
-            <h3>Signing-Up as</h3>
-            <div class="role-option">
-              <div class="role">
-                <input type="radio" id="check-Producer" name="role" value="producers" />
-                <label for="check-Producer">Producer</label>
-              </div>
-              <div class="role">
-                <input type="radio" id="check-Freelancer" name="role" value="users"/>
-                <label for="check-Freelancer">Freelancer</label>
-              </div>
-            </div>
-          </div>
-                        <div class="checkbox-text">
-                            <div class="checkbox-content">
-                                <input type="checkbox" id="termCon">
-                                <label for="termCon" class="text">I accept all terms and conditions</label>
-                            </div>
-                        </div>
-                        <div class="input-field button">
-                            <input type="submit" value="Signup">
-                        </div>
-                    </form>
-                    <div class="login-signup">
-                        <span class="text">Already a member?
-                            <a href="#" class="text login-link">Login Now</a>
-                        </span>
+                    
+                    <div class="input-field button">
+                        <input type="submit" value="Login">
                     </div>
+                </form>
+                <div class="login-signup">
+                    <span class="text">Not a member?
+                        <a href="#" class="text signup-link">Signup Now</a>
+                    </span>
                 </div>
-
-                <script src="js/onboard.js"></script>
             </div>
+
+            <!-- Sign-Up Form -->
+            <div class="form signup">
+                <span class="title">Sign-Up</span>
+                <form action="/signup" method="post">
+                    <div class="input-field">
+                        <input name="name" type="text" placeholder="Enter your name" required>
+                        <i class="uil uil-user"></i>
+                    </div>
+                    <div class="input-field">
+                        <input name="email" type="email" placeholder="Enter your email" required>
+                        <i class="uil uil-envelope icon"></i>
+                    </div>
+                    <div class="input-field">
+                        <input name="password" type="password" class="password" placeholder="Create a password" required>
+                        <i class="uil uil-lock icon"></i>
+                        <i class="uil uil-eye-slash showHidePw"></i>
+                    </div>
+                    <div class="input-field">
+                        <input name="password_confirm" type="password" class="password" placeholder="Confirm password" required>
+                        <i class="uil uil-lock icon"></i>
+                        <i class="uil uil-eye-slash showHidePw"></i>
+                    </div>
+                    <div class="role-box" style="margin-top: 30px;">
+                      <h3>Signing-Up as</h3>
+                      <div class="role-option">
+                        <div class="role">
+                          <input type="radio" id="check-Producer" name="role" value="producers" required/>
+                          <label for="check-Producer">Producer</label>
+                        </div>
+                        <div class="role">
+                          <input type="radio" id="check-Freelancer" name="role" value="users" required/>
+                          <label for="check-Freelancer">Freelancer</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="checkbox-text">
+                        <div class="checkbox-content">
+                            <input type="checkbox" id="termCon" required>
+                            <label for="termCon" class="text">I accept all Terms and Conditions</label>
+                        </div>
+                    </div>
+                    <div class="input-field button">
+                        <input type="submit" value="Signup">
+                    </div>
+                </form>
+                <div class="login-signup">
+                    <span class="text">Already a member?
+                        <a href="#" class="text login-link">Login Now</a>
+                    </span>
+                </div>
+            </div>
+
+            <script src="js/onboard.js"></script>
         </div>
     </div>
+  </div>
     
-    <div class="footer">
-      <link rel="stylesheet" href="css/footer.css">
-      <footer>
-        <div class="main-content">
-          <div class="left box">
-            <h2>About us</h2>
-            <div class="content">
-              <p>We are group of students aiming to submit this project as soom as possible and get this site working. Also i hate frontend now, I cant do this anymore this is toooooo long and tedious, tho at least it looks good</p>
-              <div class="social">
-                <a href="https://facebook.com/coding.np"><span class="fab fa-facebook-f"></span></a>
-                <a href="#"><span class="fab fa-twitter"></span></a>
-                <a href="https://instagram.com/coding.np"><span class="fab fa-instagram"></span></a>
-                <a href="https://youtube.com/c/codingnepal"><span class="fab fa-youtube"></span></a>
-              </div>
+  <div class="footer">
+    <link rel="stylesheet" href="css/footer.css">
+    <footer>
+      <div class="main-content">
+        <div class="left box">
+          <h2>About us</h2>
+          <div class="content">
+            <p>We are group of students aiming to submit this project as soom as possible and get this site working. Also i hate frontend now, I cant do this anymore this is toooooo long and tedious, tho at least it looks good</p>
+            <div class="social">
+              <a href="https://facebook.com/coding.np"><span class="fab fa-facebook-f"></span></a>
+              <a href="#"><span class="fab fa-twitter"></span></a>
+              <a href="https://instagram.com/coding.np"><span class="fab fa-instagram"></span></a>
+              <a href="https://youtube.com/c/codingnepal"><span class="fab fa-youtube"></span></a>
             </div>
           </div>
-          <div class="center box">
-            <h2>Address</h2>
-            <div class="content">
-              <div class="place">
-                <span class="fas fa-map-marker-alt"></span>
-                <span class="text">IIT roorkee</span>
-              </div>
-              <div class="phone">
-                <span class="fas fa-phone-alt"></span>
-                <span class="text">+91-0000000000</span>
-              </div>
+        </div>
+        <div class="center box">
+          <h2>Address</h2>
+          <div class="content">
+            <div class="place">
+              <span class="fas fa-map-marker-alt"></span>
+              <span class="text">IIT roorkee</span>
+            </div>
+            <div class="phone">
+              <span class="fas fa-phone-alt"></span>
+              <span class="text">+91-0000000000</span>
+            </div>
+            <div class="email">
+              <span class="fas fa-envelope"></span>
+              <span class="text">abc@example.com</span>
+            </div>
+          </div>
+        </div>
+        <div class="right box">
+          <h2>Contact us</h2>
+          <div class="content">
+            <form action="#">
               <div class="email">
-                <span class="fas fa-envelope"></span>
-                <span class="text">abc@example.com</span>
+                <div class="text">Email *</div>
+                <input type="email" required>
               </div>
-            </div>
-          </div>
-          <div class="right box">
-            <h2>Contact us</h2>
-            <div class="content">
-              <form action="#">
-                <div class="email">
-                  <div class="text">Email *</div>
-                  <input type="email" required>
-                </div>
-                <div class="msg">
-                  <div class="text">Message *</div>
-                  <textarea rows="2" cols="25" required></textarea>
-                </div>
-                <div class="btn1">
-                  <button type="submit">Send</button>
-                </div>
-              </form>
-            </div>
+              <div class="msg">
+                <div class="text">Message *</div>
+                <textarea rows="2" cols="25" required></textarea>
+              </div>
+              <div class="btn1">
+                <button type="submit">Send</button>
+              </div>
+            </form>
           </div>
         </div>
-        <div class="bottom">
-          <center>
-            <span class="credit">Created By <a href="https://www.google.com/search?&q=cats">Dog in a box Studio</a> | </span>
-            <span class="far fa-copyright"></span><span> 2023 All rights reserved.</span>
-          </center>
-        </div>
-      </footer>        
-    </div>
+      </div>
+      <div class="bottom">
+        <center>
+          <span class="credit">Created By <a href="https://www.google.com/search?&q=cats">Dog in a box Studio</a> | </span>
+          <span class="far fa-copyright"></span><span> 2023 All rights reserved.</span>
+        </center>
+      </div>
+    </footer>        
+  </div>
 </body>
 
 </html>

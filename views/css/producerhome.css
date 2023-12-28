@@ -1,6 +1,7 @@
 .page-body{
     display:grid;
     grid-template-columns: repeat(5, 1fr);
+    column-gap: 10px;
 }
 #profile-container {
     position: relative;
@@ -10,12 +11,12 @@
     text-align: center;
     padding:10px;
     background-color: #fff;
+    border-radius: 0 15px 15px 0;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background: #000428;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to bottom, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    overflow: hidden;background: #000428;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right,rgb(63, 56, 201), rgb(0, 157, 255) 100%);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom,rgb(63, 56, 201), rgb(0, 157, 255) 100%); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
-
 #profile-image {
     display:inline;
     width: 75px;
@@ -40,11 +41,12 @@
 }
 
 .nav-link{
-    font-weight: bolder;
     font-size:15px;
 }
 
+
 .user-content{
+    position: relative;
     grid-column: 2/6;
     background-color: #F7F7FF;
     padding-top:2%;

@@ -1,11 +1,7 @@
-body {
-    background-color: #f4f4f4;
-}
-
 .page-body{
     display:grid;
     grid-template-columns: repeat(5, 1fr);
-    column-gap: 60px;
+    column-gap: 10px;
 }
 #profile-container {
     position: relative;
@@ -15,9 +11,11 @@ body {
     text-align: center;
     padding:10px;
     background-color: #fff;
-    border-radius: 10px;
+    border-radius: 0 15px 15px 0;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    overflow: hidden;background: #000428;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right,rgb(63, 56, 201), rgb(0, 157, 255) 100%);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom,rgb(63, 56, 201), rgb(0, 157, 255) 100%); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 #profile-image {
     display:inline;
@@ -32,12 +30,17 @@ body {
     display:inline;
     margin-top: 10px;
     margin-right:20px;
-    font-size: 18px;
-    color: #333;
+    margin-left:20px;
+    font-size: 20px;
+    font-weight: bolder;
+    color: white;
 }
-
 .nav-item{
     padding-bottom: 40%;
+}
+
+.nav-link{
+    font-size:15px;
 }
 
 .user-content{
