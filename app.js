@@ -7,6 +7,18 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const { v4: uuidv4 } = require('uuid');
 const { userInfo } = require('os');
+const multer   =  require('multer')
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './uploads')
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now()+path.extname(file.originalname))
+    } 
+})
+var upload = multer({ storage: storage })
+
 const app = express();
 
 app.use(bodyParser.json())
@@ -14,6 +26,7 @@ app.use(cookieParser())
 app.use(express.urlencoded({extended: 'false'}))
 app.use(express.json())
 app.set('view engine', 'hbs')
+app.use('/uploads',express.static('uploads'))
 app.use(express.static("views"));
 
 const sessions = {}
@@ -60,6 +73,21 @@ class ProducerInfo{
         this.about=about
     }
 }
+
+const db = mysql.createConnection({
+    host: 'localhost',
+    port: 3307,
+    user: 'root',
+    database: 'master-db',
+})
+
+db.connect((error) => {
+    if(error) {
+        console.log(error)
+    } else {
+        console.log("MySQL connected!")
+    }
+})
 
 function user_registration(name,email,password,password_confirm){
     return new Promise(function(resolve,reject){
@@ -152,7 +180,7 @@ function getEmailFromId(type,id){
     })
 }
 
-function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,profile_image='images/default'){
+function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,profile_image='images\\\default.jpg'){
     return new Promise(function(resolve,reject){
         var query_str="INSERT INTO user_info VALUES ?"
         values=[[userid,name,email,phone,gender,address,about,previousjobs,jobprofile,profile_image]]
@@ -167,7 +195,7 @@ function user_info_insert(userid,name,email,phone,birthday,gender,address,jobpro
     })
 }
 
-function producer_info_insert(id,name,email,phone,gender,address,about,profile_image='images/default'){
+function producer_info_insert(id,name,email,phone,gender,address,about,profile_image='images\\\default.jpg'){
     return new Promise(function(resolve,reject){
         var query_str="INSERT INTO producer_info VALUES ?"
         values=[[id,name,email,phone,gender,address,about,profile_image]]
@@ -177,6 +205,37 @@ function producer_info_insert(id,name,email,phone,gender,address,about,profile_i
             }
             else{
                 return resolve("Success")
+            }
+        })
+    })
+
+}
+
+function get_user_pfp_name(user_id,db){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT profile_image from user_info where userid=?"
+        value=[[user_id]]
+        db.query(query_str,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
+function get_producer_pfp_name(producer_id,db){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT profile_image from producer_info where producerid=?"
+        value=[[producer_id]]
+        db.query(query_str,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
             }
         })
     })
@@ -256,21 +315,6 @@ function getproducerinfo(db,producerid){
     })
 }
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    port: 3701,
-    user: 'root',
-    database: 'master-db',
-})
-
-db.connect((error) => {
-    if(error) {
-        console.log(error)
-    } else {
-        console.log("MySQL connected!")
-    }
-})
-
 app.get("/", (req, res) => {
     res.render("index")
 })
@@ -302,13 +346,12 @@ app.post("/signup", async(req, res) => {
     }
 })
 
-app.post("/user-info", async(req,res)=>{
+app.post("/user-info", upload.single('profile_image'), async(req,res)=>{
     const userid=req.query.id
-    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs,profile_image}=req.body
-    console.log(profile_image)
+    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs}=req.body
     var email= await getEmailFromId(1,userid)
     email=email[0].email
-    var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
+    var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,req.file.path)
     if(response=="Success"){
         res.render('index',{message:"Successfully Registered, please Log in"})
     }
@@ -403,7 +446,7 @@ app.post("/login",(req,res)=>{
     }
 })
 
-app.get("/userhome",(req,res)=>{
+app.get("/userhome",async (req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
         res.redirect('/')
@@ -424,6 +467,11 @@ app.get("/userhome",(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     user_name=sessions[session_cookie_no].name
     userid=sessions[session_cookie_no].user_id
+
+    pfp_row=await get_user_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    console.log(pfp)
+
     query='SELECT * FROM active_jobs WHERE userid=?'
     values=[[userid]]
     db.query(query,values,(err,result)=>{
@@ -451,12 +499,12 @@ app.get("/userhome",(req,res)=>{
                 }
             }
         }
-        res.render('userhome',{jobList:jobList})
+        res.render('userhome',{jobList:jobList,profile_image:pfp,name:user_name})
     })
     
 })
 
-app.get("/producerhome",(req,res)=>{
+app.get("/producerhome",async (req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
         res.redirect('/')
@@ -477,6 +525,10 @@ app.get("/producerhome",(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     user_name=psessions[session_cookie_no].name
     userid=psessions[session_cookie_no].user_id
+    pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    console.log(pfp)
+
     query='SELECT * FROM jobs WHERE producerid=?'
     values=[[userid]]
     db.query(query,values,(err,result)=>{
@@ -504,7 +556,7 @@ app.get("/producerhome",(req,res)=>{
                 }
             }
         }
-        res.render('producerhome',{jobList:jobList})
+        res.render('producerhome',{jobList:jobList,profile_image:pfp,name:user_name})
     })
 
 })
@@ -532,6 +584,9 @@ app.get("/job-page",async (req,res)=>{
     user_name=sessions[session_cookie_no].name
     userid=sessions[session_cookie_no].user_id
 
+    pfp_row=await get_user_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+
     jobList=[]
     rows=await getAllJobs(db)
 
@@ -539,7 +594,7 @@ app.get("/job-page",async (req,res)=>{
         jobList.push(new Job(rows[i].jobid,rows[i].jobname,rows[i].jobdes))
     }
     
-    res.render('userjobPage',{jobList:jobList})
+    res.render('userjobPage',{jobList:jobList,profile_image:pfp,name:user_name})
     return
 })
     
@@ -601,14 +656,17 @@ app.get("/view-requests",async (req,res)=>{
         res.redirect('/')
     }
     
+    var user_name=sessions[session_cookie_no].name
     var userid=sessions[session_cookie_no].user_id
+    pfp_row=await get_user_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
     rows=await getJobRequests(userid,db)
     var applications=[]
     for(var i=0;i<rows.length;i++){
         var job1 = await getJobs(rows[i].jobid,db)
         applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes))
     }
-    res.render('userjobapplications',{jobList:applications})
+    res.render('userjobapplications',{jobList:applications,profile_image:pfp,name:user_name})
 })
 
 app.get("/producerprofile",async(req,res)=>{
@@ -661,6 +719,9 @@ app.get("/profile",async(req,res)=>{
     }
     var session_cookie_no=req.cookies['session_token']
     userid=sessions[session_cookie_no].user_id
+    user_name=sessions[session_cookie_no].name
+    pfp_row=await get_user_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
 
     rows=await getUserInfo(db,userid)
     if(rows.length==0){
@@ -669,7 +730,7 @@ app.get("/profile",async(req,res)=>{
     }
     rows=rows[0]
     var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
-    res.render('userprofile', {userinfo:userinfo})
+    res.render('userprofile', {userinfo:userinfo,profile_image:pfp,name:user_name})
 })
 
 app.get("/logout",(req,res)=>{
