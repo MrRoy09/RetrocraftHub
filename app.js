@@ -1049,7 +1049,7 @@ app.get("/jobinfo",async(req,res)=>{
     }
     var session_cookie_no=req.cookies['session_token']
 
-    if(!userSession){
+    if(!userSessions){
         user_name=psessions[session_cookie_no].name
         userid=psessions[session_cookie_no].user_id
         pfp_row=await get_producer_pfp_name(userid,db)
