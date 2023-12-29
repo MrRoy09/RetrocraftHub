@@ -3,9 +3,10 @@
     grid-template-columns: repeat(5, 1fr);
 }
 #profile-container {
-    position: relative;
+    position: fixed;
     display:inline-block;
-    height:100vh;
+    height:100%;
+    width: 20%;
     grid-column: 1/2;
     text-align: center;
     padding:10px;
@@ -42,7 +43,7 @@
 
 .nav-link{
     font-size:15px;
-}
+}   
 
 .header-title{
     font-family: 'Roboto' sans-serif;
