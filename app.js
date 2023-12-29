@@ -8,7 +8,6 @@ const cookieParser = require('cookie-parser')
 const { v4: uuidv4 } = require('uuid');
 const { userInfo } = require('os');
 const multer   =  require('multer')
-
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, './uploads')
@@ -80,6 +79,20 @@ class ProducerInfo{
         this.phone=phone
         this.address=address
         this.about=about
+    }
+}
+
+class JobInfo{
+    constructor(jobid,producerid,jobname,jobdes,skills,profiles,details,time,pay){
+        this.jobid=jobid
+        this.producerid=producerid
+        this.jobname=jobname
+        this.jobdes=jobdes
+        this.skills=skills
+        this.profiles=profiles
+        this.details=details
+        this.time=time
+        this.pay=pay
     }
 }
 
@@ -461,6 +474,21 @@ function declineUserApplication(db,request_id){
             }
             else{
                 return resolve("success")
+            }
+        })
+    })
+}
+
+function getJobInformation(db,jobid){
+    return new Promise(function(resolve,reject){
+        var query_str="select * from jobs where jobid=?"
+        var value=[[jobid]]
+        db.query(query_str,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
             }
         })
     })
@@ -997,6 +1025,52 @@ app.get("/decline",async(req,res)=>{
     var userid=req.query.userid
     var response=await declineUserApplication(db,userid)
     res.redirect("/producerhome")
+})
+
+app.get("/jobinfo",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    userSessions=sessions[sessionToken]
+
+    if (!producerSession && !userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+
+    if(!userSessions){
+        user_name=psessions[session_cookie_no].name
+        userid=psessions[session_cookie_no].user_id
+        pfp_row=await get_producer_pfp_name(userid,db)
+        pfp=pfp_row[0].profile_image
+    }
+
+    if(!producerSession){
+        user_name=sessions[session_cookie_no].name
+        userid=sessions[session_cookie_no].user_id
+        pfp_row=await get_user_pfp_name(userid,db)
+        pfp=pfp_row[0].profile_image
+    }
+   
+    var jobid=req.query.id
+    var row=await getJobInformation(db,jobid)
+    var jobinfo=new JobInfo(row[0].jobid,row[0].producerid,row[0].jobname,row[0].jobdes,row[0].skills,row[0].profiles,row[0].details,row[0].time,row[0].pay)
+
+    var producer_row=await getproducerinfo(db,row[0].producerid)
+    producer_row=producer_row[0]
+
+    res.render("jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
 })
 
 app.listen(5000, ()=> {
