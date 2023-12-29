@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/producerhome.css">
+    <link rel="stylesheet" href="css/producerrequests.css">
     <title>Retro Home</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,6 +45,7 @@
                   <th scope="col">Applicant id</th>
                   <th scope="col">Applicant name</th>
                   <th scope="col">Application date</th>
+                  <th scope="col">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -52,8 +53,12 @@
                   <tr>
                     <th scope="col">{{this.jobid}}</th>
                     <th scope="col">{{this.userid}}</th>
-                    <th scope="col">{{this.username}}</th>
+                    <th scope="col"><a href="link-to-user-profile">{{this.username}}</a></th>
                     <th scope="col">19/20/2023</th>
+                    <th scope="col">
+                        <a href="/accept?userid={{this.request_id}}"><img src="images/checkmark.png" style="max-width:30px; max-height:30px; margin-right:2%;"></a>
+                        <a href="/decline?userid={{this.request_id}}"><img src="images/close.png" style="max-width:18px;max-height:18px;"></a>
+                    </th>
                   </tr>
                   {{/each}}
                 </tbody>

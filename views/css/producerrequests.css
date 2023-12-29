@@ -52,3 +52,7 @@
     height: 100%;
     width: 100%;
 }
+
+.btn{
+    max-width:200px;
+}

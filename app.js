@@ -52,7 +52,8 @@ class Job{
 }
 
 class JobRequests{
-    constructor(jobid,userid,username,request_date=null){
+    constructor(request_id,jobid,userid,username,request_date=null){
+        this.request_id=request_id
         this.jobid=jobid
         this.userid=userid
         this.username=username
@@ -405,6 +406,66 @@ function newJob(db,id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay){
     })
 }
 
+function acceptUserApplication(db,request_id){
+    return new Promise(function(resolve,reject){
+        var query_str="select * from job_requests where request_id=?;"
+        var value=[[request_id]]
+        db.query(query_str,value,async(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                var job_info=await getJobs(res[0].jobid,db)
+                query_str="insert into active_jobs (jobid,userid,jobname,jobdescription,producerid) values ?"
+                var values=[[res[0].jobid,res[0].userid,job_info[0].jobname,job_info[0].jobdes,res[0].producerid]]
+                db.query(query_str,[values],(err,res2)=>{
+                    if(err){
+                        return reject(err)
+                    }
+                    else{
+                        query_str="delete from job_requests where jobid=?"
+                        value=[[res[0].jobid]]
+                        db.query(query_str,value,(err,res3)=>{
+                            if(err){
+                                return reject(err)
+                            }
+                            else{
+                                query_str="update jobs set job_accepted=? where jobid=?"
+                                value=[1,res[0].jobid]
+                                db.query(query_str,value,(err,res)=>{
+                                    if(err){
+                                        return reject(err)
+                                    }
+                                    else{
+                                        return resolve("success")
+                                    }
+                                })
+
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    })
+}
+
+function declineUserApplication(db,request_id){
+    return new Promise(function(resolve,reject){
+        query_str="delete from job_requests where request_id=?"
+        value=[[request_id]]
+        db.query(query_str,value,(err,res)=>{
+            if(err){
+                console.log(err)
+                return reject(err)
+            }
+            else{
+                return resolve("success")
+            }
+        })
+    })
+}
+
 app.get("/", (req, res) => {
     res.render("index")
 })
@@ -738,7 +799,7 @@ app.get("/jobrequests",async (req,res)=>{
     var requests=await getJobRequestsProducer(db,jobid)
     var request_list=[]
     for(var i=0;i<requests.length;i++){
-        request_list.push(new JobRequests(requests[i].jobid,requests[i].userid,requests[i].username))
+        request_list.push(new JobRequests(requests[i].request_id,requests[i].jobid,requests[i].userid,requests[i].username))
     }
     res.render('producerrequests',{request_list:request_list,profile_image:pfp,name:user_name})
 })
@@ -923,6 +984,19 @@ app.get("/logout",(req,res)=>{
     delete sessions[sessionToken]
     delete psessions[sessionToken]
     res.redirect('/')
+})
+
+app.get("/accept",async(req,res)=>{
+    var userid=req.query.userid
+    var response=await acceptUserApplication(db,userid)
+    console.log(response)
+    res.redirect("/producerhome")
+})
+
+app.get("/decline",async(req,res)=>{
+    var userid=req.query.userid
+    var response=await declineUserApplication(db,userid)
+    res.redirect("/producerhome")
 })
 
 app.listen(5000, ()=> {
