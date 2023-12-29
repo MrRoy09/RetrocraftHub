@@ -3,9 +3,10 @@
     grid-template-columns: repeat(5, 1fr);
 }
 #profile-container {
-    position: relative;
+    position: fixed;
     display:inline-block;
-    height:100vh;
+    height:100%;
+    width: 20%;
     grid-column: 1/2;
     text-align: center;
     padding:10px;
@@ -56,4 +57,18 @@
     text-align:auto; 
     padding: 1%;
     color:rgb(97, 0, 0);
+}
+
+.profile-information{
+    grid-column: 2/6;
+    padding:5%;
+    font-family: 'Roboto',sans-serif;
+}
+
+.current-job{
+    padding-top:6%;
+}
+.table{
+    margin-top:4%;
+    font-family: 'Poppins', sans-serif;
 }
