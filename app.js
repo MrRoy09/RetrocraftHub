@@ -48,7 +48,15 @@ class Job{
         this.jobdes=jobdes
         this.isRequested=isRequested
         this.image=image
+    }
+}
 
+class JobRequests{
+    constructor(jobid,userid,username,request_date=null){
+        this.jobid=jobid
+        this.userid=userid
+        this.username=username
+        this.request_date=request_date
     }
 }
 
@@ -76,7 +84,7 @@ class ProducerInfo{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
@@ -271,6 +279,40 @@ function getJobs(jobid,db,filter=null){
     })
 }
 
+function getProducerAllJobs(db,producerid){
+    return new Promise(function(resolve,reject){
+        query='SELECT * FROM jobs WHERE producerid=?'
+        values=[[producerid]]
+        jobList=[]
+        db.query(query,values,async(err,result)=>{
+            if (result.length==0){
+                var image='images/director.png'
+                job=new Job(0,'Nothing Yet','Use the create job option to create a job posting',image)
+                jobList.push(job)
+            }
+            else{
+                for (var i=0;i<result.length;i++){
+                    if(result[i].jobname=='Director'){
+                        var image='images/director.png'
+                        job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
+                        jobList.push(job)
+                    }
+                    else if (result[i].jobname=='Makeup Artist'){
+                        var image='images/makeup.png'
+                        job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
+                        jobList.push(job)
+                    }
+                    else{
+                        job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription)
+                        jobList.push(job)
+                    }
+                }
+            }
+            return resolve(jobList)
+        })
+    })
+}
+
 function getAllJobs(db){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * from jobs WHERE job_accepted=0"
@@ -320,6 +362,22 @@ function getproducerjob(db,producerid){
         var query_str="SELECT * from jobs where producerid=?"
         var value=[[producerid]]
         db.query(query_str,value,(err,res)=>{
+            if(err){
+                console.log(err)
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
+function getJobRequestsProducer(db,jobid){
+    return new Promise(function(resolve,reject){
+        var query_string="Select * from job_requests where jobid=?;"
+        var value=[[jobid]]
+        db.query(query_string,value,(err,res)=>{
             if(err){
                 console.log(err)
                 return reject(err)
@@ -567,43 +625,16 @@ app.get("/producerhome",async (req,res)=>{
         res.redirect('/')
         return
     }
+
     var session_cookie_no=req.cookies['session_token']
     user_name=psessions[session_cookie_no].name
     userid=psessions[session_cookie_no].user_id
     pfp_row=await get_producer_pfp_name(userid,db)
     pfp=pfp_row[0].profile_image
-    console.log(pfp)
+    var jobList=await getProducerAllJobs(db,userid)
 
-    query='SELECT * FROM jobs WHERE producerid=?'
-    values=[[userid]]
-    db.query(query,values,(err,result)=>{
-        jobList=[]
-        if (result.length==0){
-            var image='images/director.png'
-            job=new Job(0,'Nothing Yet','Use the create job option to create a job posting',image)
-            jobList.push(job)
-        }
-        else{
-            for (var i=0;i<result.length;i++){
-                if(result[i].jobname=='Director'){
-                    var image='images/director.png'
-                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
-                    jobList.push(job)
-                }
-                else if (result[i].jobname=='Makeup Artist'){
-                    var image='images/makeup.png'
-                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription,image)
-                    jobList.push(job)
-                }
-                else{
-                    job=new Job(result[i].jobid,result[i].jobname,result[i].jobdescription)
-                    jobList.push(job)
-                }
-            }
-        }
-        res.render('producerhome',{jobList:jobList,profile_image:pfp,name:user_name})
-    })
-
+    res.render('producerhome',{jobList:jobList,profile_image:pfp,name:user_name})
+    return   
 })
 
 app.get("/job-page",async (req,res)=>{
@@ -646,6 +677,7 @@ app.get("/job-page",async (req,res)=>{
 app.get("/requestjob",(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     var userid=sessions[session_cookie_no].user_id
+    var username=sessions[session_cookie_no].name
     var jobid=req.query.id
     query="SELECT * FROM job_requests where jobid=? AND userid=?"
     value1=[jobid,userid]
@@ -664,8 +696,8 @@ app.get("/requestjob",(req,res)=>{
             console.log(err)
         }
         producerid=result[0].producerid
-        query="INSERT INTO job_requests (`jobid`, `producerid`, `userid`) VALUES?"
-        values=[[jobid,producerid,userid]]
+        query="INSERT INTO job_requests (jobid, producerid, userid,username) VALUES ?;"
+        values=[[jobid,producerid,userid,username]]
         db.query(query,[values],(err,result)=>{
             if (err){
                 console.log(err)
@@ -676,6 +708,39 @@ app.get("/requestjob",(req,res)=>{
     })
     })
     return
+})
+
+app.get("/jobrequests",async (req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    if (!producerSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+
+    var session_cookie_no=req.cookies['session_token']
+    user_name=psessions[session_cookie_no].name
+    userid=psessions[session_cookie_no].user_id
+    pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    var jobid=req.query.jobid
+    var requests=await getJobRequestsProducer(db,jobid)
+    var request_list=[]
+    for(var i=0;i<requests.length;i++){
+        request_list.push(new JobRequests(requests[i].jobid,requests[i].userid,requests[i].username))
+    }
+    res.render('producerrequests',{request_list:request_list,profile_image:pfp,name:user_name})
 })
 
 app.get("/view-requests",async (req,res)=>{

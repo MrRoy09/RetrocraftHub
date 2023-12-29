@@ -79,3 +79,15 @@
     width:40%;
     border-radius: 10px;
 }
+
+.overlay {
+    position: fixed; 
+    display: block; 
+    text-align: center;
+    width: 50%; 
+    height: 50%; 
+    margin:auto;
+    background-color: snow;
+    z-index: 2; 
+    cursor: pointer; 
+  }

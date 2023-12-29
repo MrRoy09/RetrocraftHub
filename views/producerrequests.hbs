@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/producerhome.css">
+    <title>Retro Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Mono&family=Roboto:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page-body">
+    <div id="profile-container">
+        <img id="profile-image" src="{{profile_image}}" alt="Profile Image" class="img-fluid">
+        <h2 id="profile-name" class="mt-3 ml-4">{{name}}</h2>
+        <nav class="navbar navbar-dark mt-5 flex-column">
+            <div class="navitems" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/producerhome">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/producerprofile">View Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/createJob">Make A Job Posting</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <div class="user-content">
+        <div class="current-job">
+              <h3 class="header-title">Job Applicants</h3>
+              <table class="table table-light table-striped text-center">
+                <thead>
+                  <tr class="text-center">
+                  <th scope="col">Job Id</th>
+                  <th scope="col">Applicant id</th>
+                  <th scope="col">Applicant name</th>
+                  <th scope="col">Application date</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {{#each request_list}}
+                  <tr>
+                    <th scope="col">{{this.jobid}}</th>
+                    <th scope="col">{{this.userid}}</th>
+                    <th scope="col">{{this.username}}</th>
+                    <th scope="col">19/20/2023</th>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
+    </div>
+    </div>
