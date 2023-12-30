@@ -9,12 +9,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Mono&family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <style>
+        .welcome-div{
+        margin:2%;
+        margin-top:0%;
+        background-image: url('images/welcome.jpeg');
+        padding:4%;
+        padding-top:6%;
+        height:30%;
+        border-radius:10px;
+        line-height:80%;
+    }
+    </style>
 </head>
 <body>
 <div class="page-body">
     <div id="profile-container">
-        <img id="profile-image" src="{{profile_image}}" alt="Profile Image" class="img-fluid">
-        <h2 id="profile-name" class="mt-3 ml-4">{{name}}</h2>
+        <img src="images/logo.png" class="brand-image">
         <nav class="navbar navbar-dark mt-5 flex-column">
             <div class="navitems" id="navbarNav">
                 <ul class="navbar-nav">
@@ -37,9 +48,26 @@
             </div>
         </nav>
     </div>
+
+    <div class="top-bar">
+        <script src="https://kit.fontawesome.com/7d4718ce94.js" crossorigin="anonymous"></script>
+        <div class="container-fluid" style="padding:10px; padding-top:20px;">                    
+            <div class="pfp-container">
+                <img src="images/default.jpg" class="profile-image img-fluid">
+                <p style="display:inline; padding:8px;">{{name}}</p>
+            </div>
+            <a href="#"><span class="fa-solid fa-envelope bell-icon"></span></a>
+        </div>
+    </div>
     
     <div class="user-content">
         <div class="current-jobs">
+            <div class="welcome-div">
+                <h2 style="color:white; font-family:'Roboto',sans-serif">Welcome!!</h2>
+                <br>
+                <p style="color:white; font-family:'Roboto',sans-serif">To your onestop destination for everything bollywood</p>
+                <p style="color:white; font-family:'Roboto',sans-serif"> Find the top producrs and jobs for your next project when you hire from RetroHub</p>
+            </div>
             <h2 class="header-title">Current Jobs</h2>
             
             {{#each jobList}}
