@@ -922,25 +922,40 @@ app.get("/profile",async(req,res)=>{
         return
     }
     userSession = sessions[sessionToken]
-    if (!userSession) {
+    producerSessions=psessions[sessionToken]
+    if (!userSession && !producerSessions) {
         console.log("check3-fail")
         res.redirect('/')
         return
     }
-    var session_cookie_no=req.cookies['session_token']
-    userid=sessions[session_cookie_no].user_id
-    user_name=sessions[session_cookie_no].name
-    pfp_row=await get_user_pfp_name(userid,db)
-    pfp=pfp_row[0].profile_image
+    if(userSession){
+        var session_cookie_no=req.cookies['session_token']
+        userid=sessions[session_cookie_no].user_id
+        user_name=sessions[session_cookie_no].name
+        pfp_row=await get_user_pfp_name(userid,db)
+        pfp=pfp_row[0].profile_image
 
-    rows=await getUserInfo(db,userid)
-    if(rows.length==0){
-        res.render('userprofile')
-        return
+        rows=await getUserInfo(db,userid)
+        if(rows.length==0){
+            res.render('userprofile')
+            return
+        }
+        rows=rows[0]
+        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
+        res.render('userprofile', {userinfo:userinfo,profile_image:pfp,name:user_name})
     }
-    rows=rows[0]
-    var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
-    res.render('userprofile', {userinfo:userinfo,profile_image:pfp,name:user_name})
+    else if(producerSessions){
+        user_id=req.query.id //user id of the profile requested
+        var session_cookie_no=req.cookies['session_token']
+        userid=psessions[session_cookie_no].user_id // id of the producer
+        user_name=psessions[session_cookie_no].name 
+        pfp_row=await get_producer_pfp_name(userid,db)
+        rows=await getUserInfo(db,user_id)
+        rows=rows[0]
+        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
+        res.render('userprofileForProducer', {userinfo:userinfo,profile_image:pfp,name:user_name})
+    }
+    
 })
 
 app.get("/createjob",async(req,res)=>{
