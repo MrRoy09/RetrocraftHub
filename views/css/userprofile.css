@@ -79,3 +79,20 @@
     padding: 0.5%;
     color:rgb(97, 0, 0);
 }
+.overlay{
+    margin:1%;
+    position:fixed;
+    top:10%;
+    right:7%;
+    max-height:30%;
+    min-height:7%;
+    width:30%;
+    overflow-y: scroll;
+    display:none;
+    padding:1%;
+    padding-left:2%;
+    padding-right:2%;
+    z-index: 1;
+    background-color: black;
+    color:white;
+}

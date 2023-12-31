@@ -494,6 +494,65 @@ function getJobInformation(db,jobid){
     })
 }
 
+function getRequestInfo(db,requestid){
+    return new Promise(function(resolve,reject){
+        var query="select * from job_requests where request_id=?"
+        var value=[[requestid]]
+        db.query(query,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
+function notification(userid,producerid,direction,message,time=new Date().toLocaleTimeString()){
+    return new Promise(function(resolve,reject){
+        var query_str="insert into notifications (userid,producerid,direction,message,time) values ?";
+        var values=[[userid,producerid,direction,message,time]]
+        db.query(query_str,[values],(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve("success")
+            }
+        })
+    })
+}
+
+function getUserNotifications(db,userid){
+    return new Promise(function(resolve,reject){
+        var query="Select * from notifications where userid=? and direction=2"
+        var value=[[userid]]
+        db.query(query,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
+function deleteNotification(db,notification_id){
+    return new Promise(function(resolve,reject){
+        var query="DELETE FROM notifications WHERE notification_id=?;"
+        var value=[[notification_id]]
+        db.query(query,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve("success")
+            }
+        }) 
+    })
+}
 app.get("/", (req, res) => {
     res.render("index")
 })
@@ -548,7 +607,6 @@ app.post("/user-info", upload.single('profile_image'), async(req,res)=>{
 app.post("/producer-info",async(req,res)=>{
     const producerid=req.query.id
     const {name,phone,birthday,gender,address,about}= req.body
-    console.log(name,phone,birthday,gender,address,about)
     var email=await getEmailFromId(2,producerid)
     email=email[0].email
     if(req.file){
@@ -662,7 +720,6 @@ app.get("/userhome",async (req,res)=>{
 
     pfp_row=await get_user_pfp_name(userid,db)
     pfp=pfp_row[0].profile_image
-    console.log(pfp)
 
     query='SELECT * FROM active_jobs WHERE userid=?'
     values=[[userid]]
@@ -763,7 +820,7 @@ app.get("/job-page",async (req,res)=>{
     return
 })
     
-app.get("/requestjob",(req,res)=>{
+app.get("/requestjob",async (req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     var userid=sessions[session_cookie_no].user_id
     var username=sessions[session_cookie_no].name
@@ -787,10 +844,12 @@ app.get("/requestjob",(req,res)=>{
         producerid=result[0].producerid
         query="INSERT INTO job_requests (jobid, producerid, userid,username) VALUES ?;"
         values=[[jobid,producerid,userid,username]]
-        db.query(query,[values],(err,result)=>{
+        db.query(query,[values],async(err,result)=>{
             if (err){
                 console.log(err)
             }
+            var message=`Recieved Job Application for jobid ${jobid}`;
+            response=await notification(userid,producerid,1,message)
             res.redirect('/job-page')
             return
         })
@@ -1030,9 +1089,15 @@ app.get("/logout",(req,res)=>{
 })
 
 app.get("/accept",async(req,res)=>{
-    var userid=req.query.userid
-    var response=await acceptUserApplication(db,userid)
-    console.log(response)
+    var request_id=req.query.id
+    var rows=await getRequestInfo(db,request_id)
+    rows=rows[0]
+    var producer_id=rows.producerid
+    var user_id=rows.userid
+    var message="Job Application accepted! Check your active jobs"
+    notification(user_id,producer_id,2,message)
+    var response=await acceptUserApplication(db,request_id)
+    
     res.redirect("/producerhome")
 })
 
@@ -1087,6 +1152,34 @@ app.get("/jobinfo",async(req,res)=>{
 
     res.render("jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
 })
+
+app.get("/getnotifications",async(req,res)=>{
+    const sessionToken = req.cookies['session_token']
+
+    if(sessions[sessionToken]){
+        userid=sessions[sessionToken].user_id
+        rows=await getUserNotifications(db,userid)
+        var result=JSON.parse(JSON.stringify(rows))
+        res.json(result)
+    }
+
+    else if(psessions[sessionToken]){
+        producerid=psessions[sessionToken].user_id
+        rows=await getProducerNotifications(db,producerid)
+        var result=JSON.parse(JSON.stringify(rows))
+        res.json(rows)
+    }
+
+})
+
+app.get("/deleteusernotification",async(req,res)=>{
+    const sessionToken = req.cookies['session_token']
+    var notification_id=Number(req.query.id)
+    var response=await deleteNotification(db,notification_id)
+    console.log(response)
+    res.send(response)
+})
+
 
 app.listen(5000, ()=> {
     console.log("server started on port 5000")

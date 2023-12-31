@@ -45,7 +45,9 @@
                 <img src="images/default.jpg" class="profile-image img-fluid">
                 <p style="display:inline; padding:8px;">{{name}}</p>
             </div>
-            <a href="#"><span class="fa-solid fa-envelope bell-icon"></span></a>
+            <a href="#"><span id="notification-icon" class="fa-solid fa-envelope bell-icon"></span></a>
+        </div>
+        <div class="overlay notification-area" id="overlay">
         </div>
     </div>
     
@@ -71,7 +73,7 @@
 
 
 
-
+<script src="js/async.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
