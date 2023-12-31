@@ -98,7 +98,7 @@ class JobInfo{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
