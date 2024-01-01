@@ -109,14 +109,13 @@
     max-height:30%;
     min-height:7%;
     width:30%;
-    overflow-y: scroll;
+    overflow:-moz-hidden-unscrollable;
     display:none;
     padding:1%;
-    padding-left:2%;
-    padding-right:2%;
     z-index: 1;
-    background-color: black;
-    color:white;
+    background:#d56d12;
+    color:rgb(255, 255, 255);
+    border-radius: 10px;
 }
 
 .profile-information{
@@ -125,9 +124,6 @@
     font-family: 'Roboto',sans-serif;
 }
 
-.current-job{
-    padding-top:6%;
-}
 .table{
     margin-top:4%;
     font-family: 'Poppins', sans-serif;
