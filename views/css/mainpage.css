@@ -119,3 +119,24 @@
     color:white;
 }
 
+.profile-information{
+    grid-column: 2/6;
+    padding:5%;
+    font-family: 'Roboto',sans-serif;
+}
+
+.current-job{
+    padding-top:6%;
+}
+.table{
+    margin-top:4%;
+    font-family: 'Poppins', sans-serif;
+}
+.form-group{
+    margin-bottom: 4%;
+    margin-top:4%;
+}
+
+.btn{
+    max-width:200px;
+}
