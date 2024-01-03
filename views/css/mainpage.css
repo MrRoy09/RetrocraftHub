@@ -55,6 +55,15 @@
     color: aqua;
     background-color: rgb(2, 40, 208);
 }
+.bell-icon .badge {
+    position: absolute;
+    top: 25%;
+    right: 11%;
+    padding: 5px 10px;
+    border-radius: 50%;
+    background: red;
+    color: white;
+  }
 .pfp-container{
     float:right;
 }
@@ -103,9 +112,9 @@
 
 .overlay{
     margin:1%;
-    position:fixed;
-    top:10%;
-    right:7%;
+    position:absolute;
+    top:80%;
+    right:10%;
     max-height:30%;
     min-height:7%;
     width:30%;
