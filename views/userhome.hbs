@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/userhome.css">
+    <link rel="stylesheet" href="css/mainpage.css">
     <title>Retro Home</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,7 +57,7 @@
                 <p style="display:inline; padding:8px;" id="username">{{name}}</p>
             </div>
             
-            <a ><span id="notification-icon" class="fa-solid fa-envelope bell-icon"></span></a>
+            <a ><span id="notification-icon" class="fa-solid fa-envelope bell-icon"><span class="badge">3</span></span></a>
         </div>
         <div class="overlay notification-area" id="overlay">
         </div>
@@ -79,7 +79,7 @@
                 <div class="card-body">
                   <h5 class="card-title">{{this.jobname}}</h5>
                   <p class="card-text">{{this.jobdes}}</p>
-                  <a href="/jobinfo?id={{this.jobid}}" class="btn btn-primary jobPage-button">Job Details</a>
+                  <a href="/ujobinfo?id={{this.jobid}}" class="btn btn-primary jobPage-button">Job Details</a>
                 </div>
             </div>
             {{/each}}

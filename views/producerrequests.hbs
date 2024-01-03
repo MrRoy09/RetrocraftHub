@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/producerrequests.css">
+    <link rel="stylesheet" href="css/mainpage.css">
     <title>Retro Home</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,39 +41,37 @@
                     <img src="images/default.jpg" class="profile-image img-fluid">
                     <p style="display:inline; padding:8px;">{{name}}</p>
                 </div>
-                <a href="#"><span class="fa-solid fa-envelope bell-icon"></span></a>
+                <a href="#"><span class="fa-solid fa-envelope bell-icon"><span class="badge">3</span></span></a>
             </div>
         </div>
 
         <div class="user-content">
-            <div class="current-job">
-                <h3 class="header-title">Job Applicants</h3>
-                <table class="table table-light table-striped text-center">
-                    <thead>
-                    <tr class="text-center">
-                    <th scope="col">Job Id</th>
-                    <th scope="col">Applicant id</th>
-                    <th scope="col">Applicant name</th>
-                    <th scope="col">Application date</th>
-                    <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{#each request_list}}
-                    <tr>
-                        <th scope="col">{{this.jobid}}</th>
-                        <th scope="col">{{this.userid}}</th>
-                        <th scope="col"><a href="/profile?id={{this.userid}}">{{this.username}}</a></th>
-                        <th scope="col">19/20/2023</th>
-                        <th scope="col">
-                            <a href="/accept?id={{this.request_id}}"><img src="images/checkmark.png" style="max-width:30px; max-height:30px; margin-right:2%;"></a>
-                            <a href="/decline?id={{this.request_id}}"><img src="images/close.png" style="max-width:18px;max-height:18px;"></a>
-                        </th>
-                    </tr>
-                    {{/each}}
-                    </tbody>
-                </table>
-                </div>
+            <h3 class="header-title">Job Applicants</h3>
+            <table class="table table-light table-striped text-center">
+                <thead>
+                <tr class="text-center">
+                <th scope="col">Job Id</th>
+                <th scope="col">Applicant id</th>
+                <th scope="col">Applicant name</th>
+                <th scope="col">Application date</th>
+                <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each request_list}}
+                <tr>
+                    <th scope="col">{{this.jobid}}</th>
+                    <th scope="col">{{this.userid}}</th>
+                    <th scope="col"><a href="/profile?id={{this.userid}}">{{this.username}}</a></th>
+                    <th scope="col">19/20/2023</th>
+                    <th scope="col">
+                        <a href="/accept?id={{this.request_id}}"><img src="images/checkmark.png" style="max-width:30px; max-height:30px; margin-right:2%;"></a>
+                        <a href="/decline?id={{this.request_id}}"><img src="images/close.png" style="max-width:18px;max-height:18px;"></a>
+                    </th>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
         </div>
     </div>   
 </html>

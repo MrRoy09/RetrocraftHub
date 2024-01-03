@@ -98,7 +98,7 @@ class JobInfo{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3307,
+    port: 3701,
     user: 'root',
     database: 'master-db',
 })
@@ -1107,7 +1107,7 @@ app.get("/decline",async(req,res)=>{
     res.redirect("/producerhome")
 })
 
-app.get("/jobinfo",async(req,res)=>{
+app.get("/pjobinfo",async(req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
         res.redirect('/')
@@ -1150,7 +1150,53 @@ app.get("/jobinfo",async(req,res)=>{
     var producer_row=await getproducerinfo(db,row[0].producerid)
     producer_row=producer_row[0]
 
-    res.render("jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
+    res.render("producer-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
+})
+
+app.get("/ujobinfo",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    userSessions=sessions[sessionToken]
+
+    if (!producerSession && !userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+
+    if(!userSessions){
+        user_name=psessions[session_cookie_no].name
+        userid=psessions[session_cookie_no].user_id
+        pfp_row=await get_producer_pfp_name(userid,db)
+        pfp=pfp_row[0].profile_image
+    }
+
+    if(!producerSession){
+        user_name=sessions[session_cookie_no].name
+        userid=sessions[session_cookie_no].user_id
+        pfp_row=await get_user_pfp_name(userid,db)
+        pfp=pfp_row[0].profile_image
+    }
+   
+    var jobid=req.query.id
+    var row=await getJobInformation(db,jobid)
+    var jobinfo=new JobInfo(row[0].jobid,row[0].producerid,row[0].jobname,row[0].jobdes,row[0].skills,row[0].profiles,row[0].details,row[0].time,row[0].pay)
+
+    var producer_row=await getproducerinfo(db,row[0].producerid)
+    producer_row=producer_row[0]
+
+    res.render("producer-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
 })
 
 app.get("/getnotifications",async(req,res)=>{

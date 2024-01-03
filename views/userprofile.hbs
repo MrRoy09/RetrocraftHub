@@ -9,10 +9,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/userprofile.css">
+        <link rel="stylesheet" href="css/profile.css">
+
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Mono&family=Roboto:wght@500&display=swap" rel="stylesheet">
+        <style>
+        .welcome-div{
+          margin:2%;
+          margin-top:0%;
+          background-image: url('images/welcome.jpeg');
+          padding:4%;
+          padding-top:6%;
+          height:30%;
+          border-radius:10px;
+          line-height:80%;
+        }
+    </style>
     </head>
 
 
@@ -50,7 +63,7 @@
                 <img src="images/default.jpg" class="profile-image img-fluid">
                 <p style="display:inline; padding:8px;">{{name}}</p>
             </div>
-            <a ><span id="notification-icon" class="fa-solid fa-envelope bell-icon"></span></a>
+            <a ><span id="notification-icon" class="fa-solid fa-envelope bell-icon"><span class="badge">3</span></span></a>
         </div>
         <div class="overlay notification-area" id="overlay">
         </div>
