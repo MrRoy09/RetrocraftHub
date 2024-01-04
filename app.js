@@ -96,9 +96,16 @@ class JobInfo{
     }
 }
 
+class filter{
+    constructor(name,value){
+        this.name=`${name}`
+        this.value=value
+    }
+}
+
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
@@ -327,18 +334,44 @@ function getProducerAllJobs(db,producerid){
     })
 }
 
-function getAllJobs(db){
+function getAllJobs(db,filters=null){
     return new Promise(function(resolve,reject){
-        var query_str="SELECT * from jobs WHERE job_accepted=0"
-        db.query(query_str,(err,res)=>{
-            if(err){
-                return reject(err)
+        if(!filters){
+            var query_str="SELECT * from jobs WHERE job_accepted=0"
+            db.query(query_str,(err,res)=>{
+                if(err){
+                    return reject(err)
+                }
+                else{
+                    return resolve(res)
+                }
+            })
+        }
+        else{
+            filtered_columns=['job_accepted']
+            filtered_values=[0]
+            for(var i=0;i<filters.length;i++){
+                if(filters[i].value!="all"){
+                    filtered_columns.push(filters[i].name)
+                    filtered_values.push(filters[i].value)
+                }
             }
-            else{
-                return resolve(res)
+            if(filtered_columns.length!=0){
+                var query_str=`select * from jobs where (${filtered_columns}) = ? ;`
+                var values=[[filtered_values]]
+                sql = mysql.format(query_str, values);
+                db.query(sql,(err,res)=>{
+                    if(err){
+                        return reject(err)
+                    }
+                    else{
+                        return resolve(res)
+                    }
+                })
             }
-        })
+        }
     })
+
 }
 
 function getUserInfo(db,userid){
@@ -553,6 +586,7 @@ function deleteNotification(db,notification_id){
         }) 
     })
 }
+
 app.get("/", (req, res) => {
     res.render("index")
 })
@@ -560,7 +594,6 @@ app.get("/", (req, res) => {
 app.get("/onboard",(req,res)=>{
     res.render('onboard')
 })
-
 
 app.post("/signup", async(req, res) => {   
     const {name,email, password, password_confirm,role} = req.body
@@ -1196,7 +1229,7 @@ app.get("/ujobinfo",async(req,res)=>{
     var producer_row=await getproducerinfo(db,row[0].producerid)
     producer_row=producer_row[0]
 
-    res.render("producer-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
+    res.render("user-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
 })
 
 app.get("/getnotifications",async(req,res)=>{
@@ -1226,6 +1259,22 @@ app.get("/deleteusernotification",async(req,res)=>{
     res.send(response)
 })
 
+app.post("/applyFilters",async(req,res)=>{
+    jobList=[]
+    const {pay,time,profiles}=req.body
+    var filter1=new filter("pay",pay)
+    var filter2=new filter("time",time) 
+    var filter3=new filter("profiles", profiles) 
+    var filters=[filter1,filter2,filter3]
+    var rows=await getAllJobs(db,filters)
+
+    for(var i=0;i<rows.length;i++){
+        jobList.push(new Job(rows[i].jobid,rows[i].jobname,rows[i].jobdes))
+    }
+    
+    res.render('userjobPage',{jobList:jobList,profile_image:pfp,name:user_name})
+    return
+})
 
 app.listen(5000, ()=> {
     console.log("server started on port 5000")
