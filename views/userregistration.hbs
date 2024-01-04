@@ -67,8 +67,10 @@
             <div class="select-box">
               <select name="job_profile" id="jobProfile" required>
                 <option value="Director">Director</option>
-                <option value="Artist">Artist</option>
-                <option value="Video_Editor">Video-editor</option>
+                <option value="Music-Artist">Music Artist</option>
+                <option value="Video-Editor">Video-Editor</option>
+                <option value="Makeup">Makeup</option>
+                <option value="Lighting">Lighting</option>
                 <option value="Spotboy">Spotboy</option>
                 <option value="Misc">Misc</option>
               </select>
@@ -87,8 +89,19 @@
             <input type="file" id="pfp" name="profile_image">
           </div>
           <div class="input-box">
-              <label for="paygrade">Expected Pay</label>
-              <input type="text" id="paygrade" name="pay" placeholder="Mention the expected pay" required>
+            <label for="Expected pay">Select Expected Pay Grade</label>
+            <select class="select-box" id="Expected Pay" name="Expected pay" required>
+                <option value="0-10K">0-10K</option>
+                <option value="10K-30K">10K-30K</option>
+                <option value="30K-50K">30K-50K</option>
+                <option value="50K-1L">50K-1L</option>
+                <option value="1L-2L">1L-2L</option>
+                <option value="2L-5L">2L-5L</option>
+                <option value="5L-10L">5L-10L</option>
+                <option value="10L-30L">10L-30L</option>
+                <option value="30L-50L">30L-50L</option>
+                <option value="50L+">50L+</option>
+            </select>
           </div>
           <button type="submit">Submit</button>
         </form>
