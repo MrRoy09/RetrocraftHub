@@ -41,8 +41,10 @@
                     <img src="{{profile_image}}" class="profile-image img-fluid">
                     <p style="display:inline; padding:8px;">{{name}}</p>
                 </div>
-                <a href="#"><span class="fa-solid fa-envelope bell-icon"><span class="badge">3</span></span></a>
+                <a href><span  id="notification-icon" class="fa-solid fa-envelope bell-icon"><span class="badge">3</span></span></a>
             </div>
+             <div class="overlay notification-area" id="overlay">
+        </div>
         </div>
 
         <div class="user-content">
@@ -74,4 +76,6 @@
             </table>
         </div>
     </div>   
+    <script src="js/async.js"></script>
+</body>
 </html>

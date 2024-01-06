@@ -10,7 +10,6 @@ class Notification{
 }
 
 var notification_icon=document.getElementById("notification-icon")
-console.log(notification_icon)
 notification_icon.onclick=show_notifs
 viewed=false;
 var notifications=[]
@@ -50,8 +49,17 @@ function notifs(){
     http.onreadystatechange=function(){
         if(this.readyState==4){
             var result = JSON.parse(http.response)
+            if(result.length!=0){
+                badge=document.getElementsByClassName("badge")[0]
+                badge.style.display="inline-block"
+            }
+            else{
+                badge=document.getElementsByClassName("badge")[0]
+                badge.style.display="none"
+            }
             if(result.length>notifications.length){
                 var l=notifications.length
+                
                 for (var i=notifications.length;i<result.length;i++){
                     notifications.push(new Notification(result[i].notification_id,result[i].message,result[i].time))
                 }

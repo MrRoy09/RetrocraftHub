@@ -572,6 +572,21 @@ function getUserNotifications(db,userid){
     })
 }
 
+function getProducerNotifications(db,producerid){
+    return new Promise(function(resolve,reject){
+        var query="Select * from notifications where producerid=? and direction=1"
+        var value=[[producerid]]
+        db.query(query,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
 function deleteNotification(db,notification_id){
     return new Promise(function(resolve,reject){
         var query="DELETE FROM notifications WHERE notification_id=?;"
@@ -1255,7 +1270,6 @@ app.get("/deleteusernotification",async(req,res)=>{
     const sessionToken = req.cookies['session_token']
     var notification_id=Number(req.query.id)
     var response=await deleteNotification(db,notification_id)
-    console.log(response)
     res.send(response)
 })
 
