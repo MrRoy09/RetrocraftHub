@@ -50,12 +50,10 @@ function notifs(){
         if(this.readyState==4){
             var result = JSON.parse(http.response)
             if(result.length!=0){
-                badge=document.getElementsByClassName("badge")[0]
-                badge.style.display="inline-block"
+                document.getElementById("notification-icon").className="fa-solid fa-envelope-circle-check bell-icon"
             }
             else{
-                badge=document.getElementsByClassName("badge")[0]
-                badge.style.display="none"
+                document.getElementById("notification-icon").className="fa-solid fa-envelope bell-icon"
             }
             if(result.length>notifications.length){
                 var l=notifications.length

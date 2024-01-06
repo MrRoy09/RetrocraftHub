@@ -105,7 +105,7 @@ class filter{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3307,
+    port: 3701,
     user: 'root',
     database: 'master-db',
 })
