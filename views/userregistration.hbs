@@ -5,20 +5,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="css/reg.css"/>
+    <title>Join Us Today!</title>
+    <link rel="stylesheet" href="css/registration.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/7d4718ce94.js" crossorigin="anonymous"></script>  
   </head>
   
   <body>  
     <div class="navbar-div">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-          <img src="images/logo.png" class="navbar-brand navbar-logo"/>
-      </nav>
+          <div class="container-fluid">
+            <img src="images/logo.png" class="navbar-brand navbar-logo"/>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+          </div>
+        </nav>
     </div>
-    
+      
     <div class="gen">
-      <section class="container">
+      <section class="container1">
         <header>Tell Us about Yourself</header>
-        <form action="/user-info?id={{userid}}" method="post" class="form">
+        <form action="/user-info?id={{userid}}" method="post" class="form" enctype="multipart/form-data">
           <div class="input-box">
             <label>Full Name</label>
             <input name="name" type="text" placeholder="Enter full name" required />
@@ -57,10 +65,12 @@
           <div class="input-box">
             <label for="jobProfile"> Job Profile </label>
             <div class="select-box">
-              <select name="job_profile" id="jobProfile" multiple>
+              <select name="job_profile" id="jobProfile" required>
                 <option value="Director">Director</option>
-                <option value="Artist">Artist</option>
-                <option value="Video_Editor">Video-editor</option>
+                <option value="Music-Artist">Music Artist</option>
+                <option value="Video-Editor">Video-Editor</option>
+                <option value="Makeup">Makeup</option>
+                <option value="Lighting">Lighting</option>
                 <option value="Spotboy">Spotboy</option>
                 <option value="Misc">Misc</option>
               </select>
@@ -68,11 +78,30 @@
           </div>
           <div class="big-box">
             <label for="About"> About You </label>
-            <textarea name="about" placeholder="About You"></textarea>
+            <textarea name="about" placeholder="About You" required></textarea>
           </div>
           <div class="big-box">
             <label for="Previous Experience"> Previous Experience </label>
-            <textarea name="previous_jobs" placeholder="Your Past jobs"></textarea>
+            <textarea name="previous_jobs" placeholder="Your Past jobs" required></textarea>
+          </div>
+          <div class="photo">
+            <label for="pfp">Upload Profile Picture: </label> <br>
+            <input type="file" id="pfp" name="profile_image">
+          </div>
+          <div class="input-box">
+            <label for="Expected pay">Select Expected Pay Grade</label>
+            <select class="select-box" id="Expected Pay" name="Expected pay" required>
+                <option value="0-10K">0-10K</option>
+                <option value="10K-30K">10K-30K</option>
+                <option value="30K-50K">30K-50K</option>
+                <option value="50K-1L">50K-1L</option>
+                <option value="1L-2L">1L-2L</option>
+                <option value="2L-5L">2L-5L</option>
+                <option value="5L-10L">5L-10L</option>
+                <option value="10L-30L">10L-30L</option>
+                <option value="30L-50L">30L-50L</option>
+                <option value="50L+">50L+</option>
+            </select>
           </div>
           <button type="submit">Submit</button>
         </form>
@@ -88,10 +117,10 @@
             <div class="content">
               <p>We are group of students aiming to submit this project as soom as possible and get this site working. Also i hate frontend now, I cant do this anymore this is toooooo long and tedious, tho at least it looks good</p>
               <div class="social">
-                <a href="https://facebook.com/coding.np"><span class="fab fa-facebook-f"></span></a>
+                <a href="#"><span class="fab fa-facebook-f"></span></a>
                 <a href="#"><span class="fab fa-twitter"></span></a>
-                <a href="https://instagram.com/coding.np"><span class="fab fa-instagram"></span></a>
-                <a href="https://youtube.com/c/codingnepal"><span class="fab fa-youtube"></span></a>
+                <a href="#"><span class="fab fa-instagram"></span></a>
+                <a href="#"><span class="fab fa-youtube"></span></a>
               </div>
             </div>
           </div>
@@ -139,6 +168,5 @@
         </div>
       </footer>        
     </div>
-    
   </body>
 </html>
