@@ -340,7 +340,7 @@ function getProducerAllJobs(db,producerid){
 function getAllJobs(db,filters=null){
     return new Promise(function(resolve,reject){
         if(!filters){
-            var query_str="SELECT * from jobs WHERE job_accepted=0"
+            var query_str="SELECT * from jobs WHERE job_accepted=0 and meant_for_user=0"
             db.query(query_str,(err,res)=>{
                 if(err){
                     return reject(err)
@@ -439,19 +439,35 @@ function getJobRequestsProducer(db,jobid){
     })
 }
 
-function newJob(db,id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay){
+function newJob(db,id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay,freelancerid=null){
     return new Promise(function(resolve,reject){
-        var query_str="insert into jobs (producerid,jobname,jobdes,skills,profiles,details,time,pay) values?;"
-        var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay]]
-        db.query(query_str,[values],(err,res)=>{
-            if(err){
-                console.log(err)
-                return reject([err])
-            }
-            else{
-                return resolve(['Success',res.insertId])
-            }
-        })
+        if(!freelancerid){
+            var query_str="insert into jobs (producerid,jobname,jobdes,skills,profiles,details,time,pay) values?;"
+            var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay]]
+            db.query(query_str,[values],(err,res)=>{
+                if(err){
+                    console.log(err)
+                    return reject([err])
+                }
+                else{
+                    return resolve(['Success',res.insertId])
+                }
+            })
+        }
+        else{
+            var query_str="insert into jobs (producerid,jobname,jobdes,skills,profiles,details,time,pay,meant_for_user) values?;"
+            var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay,freelancerid]]
+            db.query(query_str,[values],(err,res)=>{
+                if(err){
+                    console.log(err)
+                    return reject([err])
+                }
+                else{
+                    return resolve(['Success',res.insertId])
+                }
+            })
+        }
+        
     })
 }
 
@@ -1124,19 +1140,18 @@ app.get("/createjob",async(req,res)=>{
     userid=psessions[session_cookie_no].user_id
     pfp_row=await get_producer_pfp_name(userid,db)
     pfp=pfp_row[0].profile_image
-    if(req.query){
+    if(req.query.response){
         if(req.query.response==0){
             res.render('createjob',{profile_image:pfp,name:user_name,message:"Successfully Created Posting"})
         }
         else if(req.query.response==1){
             res.render('createjob',{profile_image:pfp,name:user_name,message:"Failed to Create Posting"})
         }
-    }
-    
+    }    
     res.render('createjob',{profile_image:pfp,name:user_name})
 })
 
-app.post("/newJobPosting",async(req,res)=>{
+app.get("/singleUserjobcreate",async(req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
         res.redirect('/')
@@ -1157,12 +1172,56 @@ app.post("/newJobPosting",async(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     user_name=psessions[session_cookie_no].name
     userid=psessions[session_cookie_no].user_id
-    const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
-    var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay)
-    if(response[0]=='Success'){
-        res.redirect('/createjob?response=0')
+    pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    freelancerid=req.query.id
+    res.render('createSingleJob',{profile_image:pfp,name:user_name,freelancerid:freelancerid})
+})
+
+app.post("/newJobPosting",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
     }
-    else(res.redirect('/createjob?response=1'))
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    if (!producerSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    if(!req.query.id){
+        var session_cookie_no=req.cookies['session_token']
+        user_name=psessions[session_cookie_no].name
+        userid=psessions[session_cookie_no].user_id
+        const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
+        var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay)
+        if(response[0]=='Success'){
+            res.redirect('/createjob?response=0')
+        }
+        else(res.redirect('/createjob?response=1'))
+    }
+    else{
+        freelancerid=req.query.id
+        var session_cookie_no=req.cookies['session_token']
+        user_name=psessions[session_cookie_no].name
+        userid=psessions[session_cookie_no].user_id
+        const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
+        var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay,freelancerid)
+        if(response[0]=='Success'){
+            notif=await notification(freelancerid,userid,2,"Job Request received from producer")
+            res.redirect('/createjob?response=0')
+        }
+        else{
+            res.redirect('/createjob?response=1')
+        }
+    }
 })
 
 app.get("/logout",(req,res)=>{

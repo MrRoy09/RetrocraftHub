@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>RetroCraft</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/mainpage.css">
+    </head>
+    <body>        
+        <div class="page-body">
+            <div id="profile-container">
+                <img src="images/logo.png" class="brand-image">
+                <nav class="navbar navbar-dark mt-5 flex-column">
+                    <div class="navitems" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/producerhome">Home</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="/createJob">Make A Job Posting</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/producerprofile">View Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/logout">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="top-bar">
+                <script src="https://kit.fontawesome.com/7d4718ce94.js" crossorigin="anonymous"></script>
+                <div class="container-fluid" style="padding:10px; padding-top:20px;">                    
+                    <div class="pfp-container">
+                        <img src="{{profile_image}}" class="profile-image img-fluid">
+                        <p style="display:inline; padding:8px;">{{name}}</p>
+                    </div>
+                   <a><span id="notification-icon" class="fa-solid fa-envelope bell-icon"> </span></a>
+        </div>
+         <div class="overlay notification-area" id="overlay">
+        </div>
+            </div>
+
+            <div class="user-content">               
+                <h3 style="text-align:center;">Create a Job Posting</h3>
+                {{#if message}}
+                <div class="container-fluid" style="text-align: center; color:brown">
+                    <h3>{{message}}</h3>
+                </div>
+                {{/if}}
+                <form id="jobCreateForm" class="jobCreateForm" method="post" action="/newJobPosting?id={{freelancerid}}" style="width: 100%;">
+                    <div class="form-group">
+                        <label for="jobname">Name</label>
+                        <input name="jobname" type="text" class="form-control" id="jobname" placeholder="Give your posting a suitable name" required> 
+                    </div>
+                    <div class="form-group">
+                        <label for="jobdes">Job Description</label>
+                        <textarea name="jobdes" class="form-control" type="text" id="jobdes" placeholder="Enter a brief description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobskills">Required Skills</label>
+                        <input name="jobskills" class="form-control" type="text" id="jobskills" placeholder="What skills are you looking for?" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobdetails">Job Details</label>
+                        <textarea form="jobCreateForm" id="jobdetails" name="jobdetails" class="form-control" rows="3" placeholder="Provide as many details as possible" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobprofiles">Select Eligible Job Profiles</label>
+                        <select class="form-control" id="jobprofiles" name="jobprofiles" required>
+                            <option value="Director">Director</option>
+                            <option value="Music-Artist">Music Artist</option>
+                            <option value="Video-Editor">Video-Editor</option>
+                            <option value="Makeup">Makeup</option>
+                            <option value="Lighting">Lighting</option>
+                            <option value="Spotboy">Spotboy</option>
+                            <option value="Misc">Misc</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Expected time</label>
+                        <select class="form-control" id="time" name="time" required>
+                            <option value="1-2months">1-2 months</option>
+                            <option value="2-4months">2-4 months</option>
+                            <option value="4-6months">4-6 months</option>
+                            <option value="6-8months">6-8 months</option>
+                            <option value="8-12months">8-12 months</option>
+                            <option value="8-12months">1+ Years</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Expected pay">Select Expected Pay Grade</label>
+                        <select class="form-control" id="Expected Pay" name="pay" required>
+                            <option value="0-10K">0-10K</option>
+                            <option value="10K-30K">10K-30K</option>
+                            <option value="30K-50K">30K-50K</option>
+                            <option value="50K-1L">50K-1L</option>
+                            <option value="1L-2L">1L-2L</option>
+                            <option value="2L-5L">2L-5L</option>
+                            <option value="5L-10L">5L-10L</option>
+                            <option value="10L-30L">10L-30L</option>
+                            <option value="30L-50L">30L-50L</option>
+                            <option value="50L+">50L+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestusername">Existing user (Optional)</label>
+                        <input name="requestusername" type="text" class="form-control" id="requestusername" placeholder="Give a existing user to request">
+                    </div>
+                    <button class="btn btn-success" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+        <script src="js/async.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    </body>
+</html>
