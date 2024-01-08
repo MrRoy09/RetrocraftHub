@@ -288,6 +288,21 @@ function getJobRequests(userid,db){
     })
 }
 
+function getJobSentByProducers(userid,db){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM jobs WHERE meant_for_user=?"
+        var value=[[userid]]
+        db.query(query_str,value,(err,res)=>{
+        if(err){
+            return reject(err)
+        }
+        else{
+            return resolve(res)
+        }
+    })
+    })
+}
+
 function getJobs(jobid,db,filter=null){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * FROM jobs WHERE jobid=?"
@@ -1023,6 +1038,43 @@ app.get("/view-requests",async (req,res)=>{
         applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes))
     }
     res.render('userjobapplications',{jobList:applications,profile_image:pfp,name:user_name})
+})
+
+app.get("/view-requests-from-producers",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    if (!session_cookie_no){
+        res.redirect('/')
+    }
+    
+    var user_name=sessions[session_cookie_no].name
+    var userid=sessions[session_cookie_no].user_id
+    pfp_row=await get_user_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+
+    rows=await getJobSentByProducers(userid,db)
+    var applications=[]
+    for(var i=0;i<rows.length;i++){
+        var job1 = await getJobs(rows[i].jobid,db)
+        applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes))
+    }
+    res.render('viewreqfromproducer.hbs',{jobList:applications,profile_image:pfp,name:user_name})
 })
 
 app.get("/producerprofile",async(req,res)=>{
