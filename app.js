@@ -105,7 +105,7 @@ class filter{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
@@ -869,6 +869,23 @@ app.get("/job-page",async (req,res)=>{
 })
     
 app.get("/requestjob",async (req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
     var session_cookie_no=req.cookies['session_token']
     var userid=sessions[session_cookie_no].user_id
     var username=sessions[session_cookie_no].name
