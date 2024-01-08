@@ -149,3 +149,21 @@
 .btn{
     max-width:200px;
 }
+
+.chatpagecontent{
+    margin-top:5%;
+    margin-right:3%;
+    grid-column: 2/6;
+    display:grid;
+    grid-template-columns: repeat(4,1fr);
+    column-gap: 30px;
+}
+.active-chats{
+    grid-column: 1/2;
+}
+.chat-window{
+    grid-column: 2/5;
+    border-style: solid;
+    border-width:2px;
+    min-height:70vh;
+}

@@ -63,7 +63,7 @@ function notifs(){
                 }
                 for(var i=l;i<notifications.length;i++){
                     const para = document.createElement("p")
-                    para.style.display="inline"
+                    para.style.display="block"
                     para.className=notifications[i].notification_id
                     para.innerHTML = notifications[i].message
                     const a=document.createElement("button")

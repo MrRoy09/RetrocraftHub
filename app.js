@@ -105,7 +105,7 @@ class filter{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
@@ -1244,7 +1244,7 @@ app.get("/ujobinfo",async(req,res)=>{
     var producer_row=await getproducerinfo(db,row[0].producerid)
     producer_row=producer_row[0]
 
-    res.render("user-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
+    res.render("user-jobdesc",{ujobinfo:jobinfo,profile_image:pfp,userinfo:producer_row,name:user_name})
 })
 
 app.get("/getnotifications",async(req,res)=>{
