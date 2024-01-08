@@ -105,7 +105,7 @@ class filter{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3307,
+    port: 3701,
     user: 'root',
     database: 'master-db',
 })
@@ -996,7 +996,7 @@ app.get("/producerprofile",async(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     var producerid=psessions[session_cookie_no].user_id
     var user_name=psessions[session_cookie_no].name
-    var pfp_row=await get_producer_pfp_name(userid,db)
+    var pfp_row=await get_producer_pfp_name(producerid,db)
     pfp=pfp_row[0].profile_image
     var producer_info_row=await getproducerinfo(db,producerid)
     var producer_jobs=await getproducerjob(db,producerid)
