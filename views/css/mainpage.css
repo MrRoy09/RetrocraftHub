@@ -167,3 +167,8 @@
     border-width:2px;
     min-height:70vh;
 }
+
+.button-filter{
+    border-radius: 10px;
+    background-color: blue
+}

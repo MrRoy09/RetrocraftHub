@@ -67,7 +67,7 @@ function notifs(){
                     para.className=notifications[i].notification_id
                     para.innerHTML = notifications[i].message
                     const a=document.createElement("button")
-                    a.className=notifications[i].notification_id
+                    a.className=notifications[i].notification_id + 'btn btn-success'
                     a.innerHTML="k"
                     a.onclick=removeNotification
                     a.style.display="inline"
