@@ -61,7 +61,10 @@ class JobRequests{
 }
 
 class Userinfo{
-    constructor(name, email, phone, address , jobprofile ,previousjobs, paygrade){
+    constructor(name, email, phone, address , jobprofile ,previousjobs, paygrade,id=null){
+        if(id){
+            this.id=id
+        }
         this.name=name
         this.email=email
         this.phone=phone
@@ -602,6 +605,20 @@ function deleteNotification(db,notification_id){
     })
 }
 
+function getAllUsers(db){
+    return new Promise(function(resolve,reject){
+        var query="SELECT * from user_info"
+        db.query(query,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
 app.get("/", (req, res) => {
     res.render("index")
 })
@@ -1069,15 +1086,17 @@ app.get("/profile",async(req,res)=>{
         res.render('userprofile', {userinfo:userinfo,profile_image:pfp,name:user_name})
     }
     else if(producerSessions){
-        user_id=req.query.id //user id of the profile requested
-        var session_cookie_no=req.cookies['session_token']
-        userid=psessions[session_cookie_no].user_id // id of the producer
-        user_name=psessions[session_cookie_no].name 
-        pfp_row=await get_producer_pfp_name(userid,db)
-        rows=await getUserInfo(db,user_id)
-        rows=rows[0]
-        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
-        res.render('userprofileForProducer', {userinfo:userinfo,profile_image:pfp,name:user_name})
+        if(req.query.id){
+            user_id=req.query.id
+            var session_cookie_no=req.cookies['session_token']
+            userid=psessions[session_cookie_no].user_id // id of the producer
+            user_name=psessions[session_cookie_no].name 
+            pfp_row=await get_producer_pfp_name(userid,db)
+            rows=await getUserInfo(db,user_id)
+            rows=rows[0]
+            var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.paygrade)
+            res.render('userprofileForProducer', {userinfo:userinfo,profile_image:pfp,name:user_name})
+        }
     }
     
 })
@@ -1294,6 +1313,41 @@ app.get("/deleteusernotification",async(req,res)=>{
     var notification_id=Number(req.query.id)
     var response=await deleteNotification(db,notification_id)
     res.send(response)
+})
+
+app.get("/allFreelancers",async (req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = psessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    if (!session_cookie_no){
+        res.redirect('/')
+    }
+    var user_name=psessions[session_cookie_no].name
+    var userid=psessions[session_cookie_no].user_id
+    pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    var user_list=[]
+    var allUsers=await getAllUsers(db)
+    console.log(allUsers)
+    for(var i=0;i<allUsers.length;i++){
+        user_list.push(new Userinfo(allUsers[i].name," "," "," ",allUsers[i].job_profile," ",allUsers[i].paygrade,allUsers[i].userid))
+    }
+    res.render('allFreelancerProfiles',{profile_image:pfp,name:user_name,freelancer_list:user_list})
 })
 
 app.post("/applyFilters",async(req,res)=>{
