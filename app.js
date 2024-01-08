@@ -209,10 +209,10 @@ function getEmailFromId(type,id){
     })
 }
 
-function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,profile_image='images\\\default.jpg'){
+function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,pay,profile_image='images\\\default.jpg'){
     return new Promise(function(resolve,reject){
         var query_str="INSERT INTO user_info VALUES ?"
-        values=[[userid,name,email,phone,gender,address,about,previousjobs,jobprofile,profile_image]]
+        values=[[userid,name,email,phone,gender,address,about,previousjobs,jobprofile,pay,profile_image]]
         db.query(query_str,[values],(err,res)=>{
             if(err){
                 return reject(err)
@@ -634,14 +634,14 @@ app.post("/signup", async(req, res) => {
 
 app.post("/user-info", upload.single('profile_image'), async(req,res)=>{
     const userid=req.query.id
-    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs}=req.body
+    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs,pay}=req.body
     var email= await getEmailFromId(1,userid)
     email=email[0].email
     if(req.file){
-        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,req.file.path)
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,pay,req.file.path)
     }
     else{
-        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,pay)
     }
     
     if(response=="Success"){
@@ -1048,7 +1048,7 @@ app.get("/profile",async(req,res)=>{
             return
         }
         rows=rows[0]
-        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
+        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.paygrade)
         res.render('userprofile', {userinfo:userinfo,profile_image:pfp,name:user_name})
     }
     else if(producerSessions){
@@ -1198,7 +1198,7 @@ app.get("/pjobinfo",async(req,res)=>{
     var producer_row=await getproducerinfo(db,row[0].producerid)
     producer_row=producer_row[0]
 
-    res.render("producer-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
+    res.render("producer-jobdesc",{jobinfo:jobinfo,userinfo:producer_row,profile_image:pfp})
 })
 
 app.get("/ujobinfo",async(req,res)=>{
@@ -1238,13 +1238,19 @@ app.get("/ujobinfo",async(req,res)=>{
     }
    
     var jobid=req.query.id
-    var row=await getJobInformation(db,jobid)
-    var jobinfo=new JobInfo(row[0].jobid,row[0].producerid,row[0].jobname,row[0].jobdes,row[0].skills,row[0].profiles,row[0].details,row[0].time,row[0].pay)
+    if(jobid!=0){
+        var row=await getJobInformation(db,jobid)
+        var jobinfo=new JobInfo(row[0].jobid,row[0].producerid,row[0].jobname,row[0].jobdes,row[0].skills,row[0].profiles,row[0].details,row[0].time,row[0].pay)
 
-    var producer_row=await getproducerinfo(db,row[0].producerid)
-    producer_row=producer_row[0]
+        var producer_row=await getproducerinfo(db,row[0].producerid)
+        producer_row=producer_row[0]
 
     res.render("user-jobdesc",{ujobinfo:jobinfo,profile_image:pfp,userinfo:producer_row,name:user_name})
+    }
+    else{
+        res.redirect("/userhome")
+    }
+    
 })
 
 app.get("/getnotifications",async(req,res)=>{
