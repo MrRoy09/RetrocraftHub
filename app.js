@@ -1242,7 +1242,7 @@ app.get("/singleUserjobcreate",async(req,res)=>{
     pfp_row=await get_producer_pfp_name(userid,db)
     pfp=pfp_row[0].profile_image
     freelancerid=req.query.id
-    res.render('createSingleJob',{profile_image:pfp,name:user_name,freelancerid:freelancerid})
+    res.render('createsingleJob',{profile_image:pfp,name:user_name,freelancerid:freelancerid})
 })
 
 app.post("/newJobPosting",async(req,res)=>{
