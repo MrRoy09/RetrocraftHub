@@ -108,7 +108,7 @@ class filter{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3701,
+    port: 3307,
     user: 'root',
     database: 'master-db',
 })
@@ -290,7 +290,7 @@ function getJobRequests(userid,db){
 
 function getJobSentByProducers(userid,db){
     return new Promise(function(resolve,reject){
-        var query_str="SELECT * FROM jobs WHERE meant_for_user=?"
+        var query_str="SELECT * FROM jobs WHERE meant_for_user=? and job_accepted=0"
         var value=[[userid]]
         db.query(query_str,value,(err,res)=>{
         if(err){
@@ -474,7 +474,7 @@ function newJob(db,id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay,f
             var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay,freelancerid]]
             db.query(query_str,[values],(err,res)=>{
                 if(err){
-                    console.log(err)
+
                     return reject([err])
                 }
                 else{
@@ -645,6 +645,21 @@ function getAllUsers(db){
             }
             else{
                 return resolve(res)
+            }
+        })
+    })
+}
+
+function acceptProducerRequest(jobid){
+    return new Promise(function(resolve,reject){
+        var query="update jobs set job_accepted=1 where jobid=?"
+        var value=[[jobid]]
+        db.query(query,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve("Success")
             }
         })
     })
@@ -1476,6 +1491,51 @@ app.post("/applyFilters",async(req,res)=>{
     
     res.render('userjobPage',{jobList:jobList,profile_image:pfp,name:user_name})
     return
+})
+
+app.get("/acceptProducerRequest",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    if (!session_cookie_no){
+        res.redirect('/')
+    }
+    var user_name=sessions[session_cookie_no].name
+    var userid=sessions[session_cookie_no].user_id
+    pfp_row=await get_user_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    var jobid=req.query.id
+    var response=await acceptProducerRequest(jobid)
+    if (response=="Success"){
+        var res1=await getJobInformation(db,jobid)
+        query_str="insert into active_jobs (jobid,userid,jobname,jobdescription,producerid) values ?"
+        var values=[[res1[0].jobid,res1[0].meant_for_user,res1[0].jobname,res1[0].jobdes,res1[0].producerid]]
+        db.query(query_str,[values],(err,res2)=>{
+            if(err){
+                console.log(err)
+            }
+            else{
+                res.redirect('/userhome')
+            }
+        })
+        return
+    }
+    
 })
 
 app.listen(5000, ()=> {
