@@ -61,7 +61,10 @@ class JobRequests{
 }
 
 class Userinfo{
-    constructor(name, email, phone, address , jobprofile ,previousjobs, paygrade){
+    constructor(name, email, phone, address , jobprofile ,previousjobs, paygrade,id=null){
+        if(id){
+            this.id=id
+        }
         this.name=name
         this.email=email
         this.phone=phone
@@ -105,7 +108,7 @@ class filter{
 
 const db = mysql.createConnection({
     host: 'localhost',
-    port: 3307,
+    port: 3701,
     user: 'root',
     database: 'master-db',
 })
@@ -209,10 +212,10 @@ function getEmailFromId(type,id){
     })
 }
 
-function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,profile_image='images\\\default.jpg'){
+function user_info_insert(userid,name,email,phone,birthday,gender,address,jobprofile,about,previousjobs,pay,profile_image='images\\\default.jpg'){
     return new Promise(function(resolve,reject){
         var query_str="INSERT INTO user_info VALUES ?"
-        values=[[userid,name,email,phone,gender,address,about,previousjobs,jobprofile,profile_image]]
+        values=[[userid,name,email,phone,gender,address,about,previousjobs,jobprofile,pay,profile_image]]
         db.query(query_str,[values],(err,res)=>{
             if(err){
                 return reject(err)
@@ -285,6 +288,21 @@ function getJobRequests(userid,db){
     })
 }
 
+function getJobSentByProducers(userid,db){
+    return new Promise(function(resolve,reject){
+        var query_str="SELECT * FROM jobs WHERE meant_for_user=?"
+        var value=[[userid]]
+        db.query(query_str,value,(err,res)=>{
+        if(err){
+            return reject(err)
+        }
+        else{
+            return resolve(res)
+        }
+    })
+    })
+}
+
 function getJobs(jobid,db,filter=null){
     return new Promise(function(resolve,reject){
         var query_str="SELECT * FROM jobs WHERE jobid=?"
@@ -337,7 +355,7 @@ function getProducerAllJobs(db,producerid){
 function getAllJobs(db,filters=null){
     return new Promise(function(resolve,reject){
         if(!filters){
-            var query_str="SELECT * from jobs WHERE job_accepted=0"
+            var query_str="SELECT * from jobs WHERE job_accepted=0 and meant_for_user=0"
             db.query(query_str,(err,res)=>{
                 if(err){
                     return reject(err)
@@ -436,19 +454,35 @@ function getJobRequestsProducer(db,jobid){
     })
 }
 
-function newJob(db,id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay){
+function newJob(db,id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay,freelancerid=null){
     return new Promise(function(resolve,reject){
-        var query_str="insert into jobs (producerid,jobname,jobdes,skills,profiles,details,time,pay) values?;"
-        var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay]]
-        db.query(query_str,[values],(err,res)=>{
-            if(err){
-                console.log(err)
-                return reject([err])
-            }
-            else{
-                return resolve(['Success',res.insertId])
-            }
-        })
+        if(!freelancerid){
+            var query_str="insert into jobs (producerid,jobname,jobdes,skills,profiles,details,time,pay) values?;"
+            var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay]]
+            db.query(query_str,[values],(err,res)=>{
+                if(err){
+                    console.log(err)
+                    return reject([err])
+                }
+                else{
+                    return resolve(['Success',res.insertId])
+                }
+            })
+        }
+        else{
+            var query_str="insert into jobs (producerid,jobname,jobdes,skills,profiles,details,time,pay,meant_for_user) values?;"
+            var values=[[id,jobname,jobdes,jobskills,jobprofiles,jobdetails,time,pay,freelancerid]]
+            db.query(query_str,[values],(err,res)=>{
+                if(err){
+                    console.log(err)
+                    return reject([err])
+                }
+                else{
+                    return resolve(['Success',res.insertId])
+                }
+            })
+        }
+        
     })
 }
 
@@ -572,6 +606,21 @@ function getUserNotifications(db,userid){
     })
 }
 
+function getProducerNotifications(db,producerid){
+    return new Promise(function(resolve,reject){
+        var query="Select * from notifications where producerid=? and direction=1"
+        var value=[[producerid]]
+        db.query(query,value,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
+    })
+}
+
 function deleteNotification(db,notification_id){
     return new Promise(function(resolve,reject){
         var query="DELETE FROM notifications WHERE notification_id=?;"
@@ -584,6 +633,20 @@ function deleteNotification(db,notification_id){
                 return resolve("success")
             }
         }) 
+    })
+}
+
+function getAllUsers(db){
+    return new Promise(function(resolve,reject){
+        var query="SELECT * from user_info"
+        db.query(query,(err,res)=>{
+            if(err){
+                return reject(err)
+            }
+            else{
+                return resolve(res)
+            }
+        })
     })
 }
 
@@ -619,14 +682,14 @@ app.post("/signup", async(req, res) => {
 
 app.post("/user-info", upload.single('profile_image'), async(req,res)=>{
     const userid=req.query.id
-    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs}=req.body
+    const {name,phone,birthday,gender,address,job_profile,about,previous_jobs,pay}=req.body
     var email= await getEmailFromId(1,userid)
     email=email[0].email
     if(req.file){
-        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,req.file.path)
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,pay,req.file.path)
     }
     else{
-        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs)
+        var response=await user_info_insert(userid,name,email,phone,birthday,gender,address,job_profile,about,previous_jobs,pay)
     }
     
     if(response=="Success"){
@@ -854,6 +917,23 @@ app.get("/job-page",async (req,res)=>{
 })
     
 app.get("/requestjob",async (req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
     var session_cookie_no=req.cookies['session_token']
     var userid=sessions[session_cookie_no].user_id
     var username=sessions[session_cookie_no].name
@@ -960,6 +1040,43 @@ app.get("/view-requests",async (req,res)=>{
     res.render('userjobapplications',{jobList:applications,profile_image:pfp,name:user_name})
 })
 
+app.get("/view-requests-from-producers",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = sessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    if (!session_cookie_no){
+        res.redirect('/')
+    }
+    
+    var user_name=sessions[session_cookie_no].name
+    var userid=sessions[session_cookie_no].user_id
+    pfp_row=await get_user_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+
+    rows=await getJobSentByProducers(userid,db)
+    var applications=[]
+    for(var i=0;i<rows.length;i++){
+        var job1 = await getJobs(rows[i].jobid,db)
+        applications.push(new Job(job1[0].jobid,job1[0].jobname,job1[0].jobdes))
+    }
+    res.render('viewreqfromproducer.hbs',{jobList:applications,profile_image:pfp,name:user_name})
+})
+
 app.get("/producerprofile",async(req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
@@ -981,7 +1098,7 @@ app.get("/producerprofile",async(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     var producerid=psessions[session_cookie_no].user_id
     var user_name=psessions[session_cookie_no].name
-    var pfp_row=await get_producer_pfp_name(userid,db)
+    var pfp_row=await get_producer_pfp_name(producerid,db)
     pfp=pfp_row[0].profile_image
     var producer_info_row=await getproducerinfo(db,producerid)
     var producer_jobs=await getproducerjob(db,producerid)
@@ -1033,19 +1150,21 @@ app.get("/profile",async(req,res)=>{
             return
         }
         rows=rows[0]
-        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
+        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.paygrade)
         res.render('userprofile', {userinfo:userinfo,profile_image:pfp,name:user_name})
     }
     else if(producerSessions){
-        user_id=req.query.id //user id of the profile requested
-        var session_cookie_no=req.cookies['session_token']
-        userid=psessions[session_cookie_no].user_id // id of the producer
-        user_name=psessions[session_cookie_no].name 
-        pfp_row=await get_producer_pfp_name(userid,db)
-        rows=await getUserInfo(db,user_id)
-        rows=rows[0]
-        var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.pay_grade)
-        res.render('userprofileForProducer', {userinfo:userinfo,profile_image:pfp,name:user_name})
+        if(req.query.id){
+            user_id=req.query.id
+            var session_cookie_no=req.cookies['session_token']
+            userid=psessions[session_cookie_no].user_id // id of the producer
+            user_name=psessions[session_cookie_no].name 
+            pfp_row=await get_producer_pfp_name(userid,db)
+            rows=await getUserInfo(db,user_id)
+            rows=rows[0]
+            var userinfo=new Userinfo(rows.name,rows.email,rows.phone_number,rows.address,rows.job_profile,rows.previous_jobs,rows.paygrade)
+            res.render('userprofileForProducer', {userinfo:userinfo,profile_image:pfp,name:user_name})
+        }
     }
     
 })
@@ -1073,19 +1192,18 @@ app.get("/createjob",async(req,res)=>{
     userid=psessions[session_cookie_no].user_id
     pfp_row=await get_producer_pfp_name(userid,db)
     pfp=pfp_row[0].profile_image
-    if(req.query){
+    if(req.query.response){
         if(req.query.response==0){
             res.render('createjob',{profile_image:pfp,name:user_name,message:"Successfully Created Posting"})
         }
         else if(req.query.response==1){
             res.render('createjob',{profile_image:pfp,name:user_name,message:"Failed to Create Posting"})
         }
-    }
-    
+    }    
     res.render('createjob',{profile_image:pfp,name:user_name})
 })
 
-app.post("/newJobPosting",async(req,res)=>{
+app.get("/singleUserjobcreate",async(req,res)=>{
     if (!req.cookies) {
         console.log("check1-fail")
         res.redirect('/')
@@ -1106,12 +1224,56 @@ app.post("/newJobPosting",async(req,res)=>{
     var session_cookie_no=req.cookies['session_token']
     user_name=psessions[session_cookie_no].name
     userid=psessions[session_cookie_no].user_id
-    const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
-    var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay)
-    if(response[0]=='Success'){
-        res.redirect('/createjob?response=0')
+    pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    freelancerid=req.query.id
+    res.render('createSingleJob',{profile_image:pfp,name:user_name,freelancerid:freelancerid})
+})
+
+app.post("/newJobPosting",async(req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
     }
-    else(res.redirect('/createjob?response=1'))
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    producerSession = psessions[sessionToken]
+    if (!producerSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    if(!req.query.id){
+        var session_cookie_no=req.cookies['session_token']
+        user_name=psessions[session_cookie_no].name
+        userid=psessions[session_cookie_no].user_id
+        const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
+        var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay)
+        if(response[0]=='Success'){
+            res.redirect('/createjob?response=0')
+        }
+        else(res.redirect('/createjob?response=1'))
+    }
+    else{
+        freelancerid=req.query.id
+        var session_cookie_no=req.cookies['session_token']
+        user_name=psessions[session_cookie_no].name
+        userid=psessions[session_cookie_no].user_id
+        const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
+        var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay,freelancerid)
+        if(response[0]=='Success'){
+            notif=await notification(freelancerid,userid,2,"Job Request received from producer")
+            res.redirect('/createjob?response=0')
+        }
+        else{
+            res.redirect('/createjob?response=1')
+        }
+    }
 })
 
 app.get("/logout",(req,res)=>{
@@ -1183,7 +1345,7 @@ app.get("/pjobinfo",async(req,res)=>{
     var producer_row=await getproducerinfo(db,row[0].producerid)
     producer_row=producer_row[0]
 
-    res.render("producer-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
+    res.render("producer-jobdesc",{jobinfo:jobinfo,userinfo:producer_row,profile_image:pfp})
 })
 
 app.get("/ujobinfo",async(req,res)=>{
@@ -1223,13 +1385,19 @@ app.get("/ujobinfo",async(req,res)=>{
     }
    
     var jobid=req.query.id
-    var row=await getJobInformation(db,jobid)
-    var jobinfo=new JobInfo(row[0].jobid,row[0].producerid,row[0].jobname,row[0].jobdes,row[0].skills,row[0].profiles,row[0].details,row[0].time,row[0].pay)
+    if(jobid!=0){
+        var row=await getJobInformation(db,jobid)
+        var jobinfo=new JobInfo(row[0].jobid,row[0].producerid,row[0].jobname,row[0].jobdes,row[0].skills,row[0].profiles,row[0].details,row[0].time,row[0].pay)
 
-    var producer_row=await getproducerinfo(db,row[0].producerid)
-    producer_row=producer_row[0]
+        var producer_row=await getproducerinfo(db,row[0].producerid)
+        producer_row=producer_row[0]
 
-    res.render("user-jobdesc",{jobinfo:jobinfo,userinfo:producer_row})
+    res.render("user-jobdesc",{ujobinfo:jobinfo,profile_image:pfp,userinfo:producer_row,name:user_name})
+    }
+    else{
+        res.redirect("/userhome")
+    }
+    
 })
 
 app.get("/getnotifications",async(req,res)=>{
@@ -1255,8 +1423,42 @@ app.get("/deleteusernotification",async(req,res)=>{
     const sessionToken = req.cookies['session_token']
     var notification_id=Number(req.query.id)
     var response=await deleteNotification(db,notification_id)
-    console.log(response)
     res.send(response)
+})
+
+app.get("/allFreelancers",async (req,res)=>{
+    if (!req.cookies) {
+        console.log("check1-fail")
+        res.redirect('/')
+        return
+    }
+    const sessionToken = req.cookies['session_token']
+    if (!sessionToken) {
+        console.log("check2-fail")
+        res.redirect('/')
+        return
+    }
+    userSession = psessions[sessionToken]
+    if (!userSession) {
+        console.log("check3-fail")
+        res.redirect('/')
+        return
+    }
+    var session_cookie_no=req.cookies['session_token']
+    if (!session_cookie_no){
+        res.redirect('/')
+    }
+    var user_name=psessions[session_cookie_no].name
+    var userid=psessions[session_cookie_no].user_id
+    pfp_row=await get_producer_pfp_name(userid,db)
+    pfp=pfp_row[0].profile_image
+    var user_list=[]
+    var allUsers=await getAllUsers(db)
+    console.log(allUsers)
+    for(var i=0;i<allUsers.length;i++){
+        user_list.push(new Userinfo(allUsers[i].name," "," "," ",allUsers[i].job_profile," ",allUsers[i].paygrade,allUsers[i].userid))
+    }
+    res.render('allFreelancerProfiles',{profile_image:pfp,name:user_name,freelancer_list:user_list})
 })
 
 app.post("/applyFilters",async(req,res)=>{

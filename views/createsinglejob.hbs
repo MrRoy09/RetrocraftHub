@@ -57,7 +57,7 @@
                     <h3>{{message}}</h3>
                 </div>
                 {{/if}}
-                <form id="jobCreateForm" class="jobCreateForm" method="post" action="/newJobPosting" style="width: 100%;">
+                <form id="jobCreateForm" class="jobCreateForm" method="post" action="/newJobPosting?id={{freelancerid}}" style="width: 100%;">
                     <div class="form-group">
                         <label for="jobname">Name</label>
                         <input name="jobname" type="text" class="form-control" id="jobname" placeholder="Give your posting a suitable name" required> 
@@ -112,6 +112,7 @@
                             <option value="50L+">50L+</option>
                         </select>
                     </div>
+                    
                     <button class="btn btn-success button-filter" type="submit">Submit</button>
                 </form>
             </div>

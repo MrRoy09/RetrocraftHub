@@ -26,6 +26,9 @@
                         <a class="nav-link" href="/view-requests">View Ongoing Requests</a>
                     </li>
                     <li class="nav-item">
+                      <a class="nav-link" href="/view-requests-from-producers">View Requets from producers</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/job-page">All Jobs</a>
                     </li>
                     <li class="nav-item">
@@ -43,11 +46,11 @@
         <script src="https://kit.fontawesome.com/7d4718ce94.js" crossorigin="anonymous"></script>
         <div class="container-fluid" style="padding:10px; padding-top:20px;">                    
             <div class="pfp-container">
-                <img src="images/default.jpg" class="profile-image img-fluid">
+                <img src="{{profile_image}}" class="profile-image img-fluid">
                 <p style="display:inline; padding:8px;" id="username">{{name}}</p>
             </div>
             
-            <a ><span id="notification-icon" class="fa-solid fa-envelope bell-icon"><span class="badge">3</span></span></a>
+            <a ><span id="notification-icon" class="fa-solid fa-envelope bell-icon"> </span></a>
         </div>
         <div class="overlay notification-area" id="overlay">
         </div>

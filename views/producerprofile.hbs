@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/profile.css">
-        <title>Boxy</title>
+        <title>Retro Profile</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
@@ -24,6 +24,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/createJob">Make A Job Posting</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/allFreelancers">View All Freelancers</a>
+                    </li>
                     <li class="nav-item active">
                         <a class="nav-link" href="/producerprofile">View Profile</a>
                     </li>
@@ -39,11 +42,13 @@
             <script src="https://kit.fontawesome.com/7d4718ce94.js" crossorigin="anonymous"></script>
             <div class="container-fluid" style="padding:10px; padding-top:20px;">                    
                 <div class="pfp-container">
-                    <img src="images/default.jpg" class="profile-image img-fluid">
+                    <img src="{{profile_image}}" class="profile-image img-fluid">
                     <p style="display:inline; padding:8px;">{{name}}</p>
                 </div>
-                <a href="#"><span class="fa-solid fa-envelope bell-icon"><span class="badge">3</span></span></a>
-            </div>
+                <a><span id="notification-icon" class="fa-solid fa-envelope bell-icon"> </span></a>
+        </div>
+         <div class="overlay notification-area" id="overlay">
+        </div>
         </div>
 
         <div class="profile-information">
@@ -120,6 +125,6 @@
         
     </div>
 
-    <script src="" async defer></script>
+    <script src="js/async.js"></script>
     </body>
 </html>

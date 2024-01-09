@@ -10,7 +10,6 @@ class Notification{
 }
 
 var notification_icon=document.getElementById("notification-icon")
-console.log(notification_icon)
 notification_icon.onclick=show_notifs
 viewed=false;
 var notifications=[]
@@ -50,18 +49,25 @@ function notifs(){
     http.onreadystatechange=function(){
         if(this.readyState==4){
             var result = JSON.parse(http.response)
+            if(result.length!=0){
+                document.getElementById("notification-icon").className="fa-solid fa-envelope-circle-check bell-icon"
+            }
+            else{
+                document.getElementById("notification-icon").className="fa-solid fa-envelope bell-icon"
+            }
             if(result.length>notifications.length){
                 var l=notifications.length
+                
                 for (var i=notifications.length;i<result.length;i++){
                     notifications.push(new Notification(result[i].notification_id,result[i].message,result[i].time))
                 }
                 for(var i=l;i<notifications.length;i++){
                     const para = document.createElement("p")
-                    para.style.display="inline"
+                    para.style.display="block"
                     para.className=notifications[i].notification_id
                     para.innerHTML = notifications[i].message
                     const a=document.createElement("button")
-                    a.className=notifications[i].notification_id
+                    a.className=notifications[i].notification_id + 'btn btn-success'
                     a.innerHTML="k"
                     a.onclick=removeNotification
                     a.style.display="inline"

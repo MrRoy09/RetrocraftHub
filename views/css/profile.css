@@ -45,7 +45,7 @@
     text-align: center;
     width:45px;
     height:45px;
-    padding-top: 1.2%;
+    padding-top: 15px;
     margin-right:40px;
     border-radius: 50%;
     background-color:rgb(16, 0, 95);
@@ -55,10 +55,12 @@
     color: aqua;
     background-color: rgb(2, 40, 208);
 }
+
 .bell-icon .badge {
     position: absolute;
-    top: 25%;
-    right: 11%;
+    display:none;
+    top: 25px;
+    right: 150px;
     padding: 5px 10px;
     border-radius: 50%;
     background: red;
@@ -99,20 +101,20 @@
 
 .overlay{
     margin:1%;
-    position:fixed;
-    top:10%;
-    right:7%;
-    max-height:30%;
+    position:absolute;
+    top:80%;
+    right:10%;
+    max-height:200%;
     min-height:7%;
-    width:30%;
-    overflow-y: scroll;
+    width:35%;
+    overflow:-moz-hidden-unscrollable;
+    overflow-y:scroll;
     display:none;
     padding:1%;
-    padding-left:2%;
-    padding-right:2%;
     z-index: 1;
-    background-color: black;
-    color:white;
+    background:#d56d12;
+    color:rgb(255, 255, 255);
+    border-radius: 10px;
 }
 
 .profile-information{
