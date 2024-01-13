@@ -375,7 +375,7 @@ function getAllJobs(db,filters=null){
                 }
             }
             if(filtered_columns.length!=0){
-                var query_str=`select * from jobs where (${filtered_columns}) = ? ;`
+                var query_str=`select * from jobs where (${filtered_columns}) = ? and job_accepted=0 and meant_for_user=0;`
                 var values=[[filtered_values]]
                 sql = mysql.format(query_str, values);
                 db.query(sql,(err,res)=>{
@@ -1280,7 +1280,7 @@ app.post("/newJobPosting",async(req,res)=>{
         user_name=psessions[session_cookie_no].name
         userid=psessions[session_cookie_no].user_id
         const {jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay}=req.body
-        var response = await newJob(db,user_id,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay,freelancerid)
+        var response = await newJob(db,userid,jobname,jobdes,jobskills,jobdetails,jobprofiles,time,pay,freelancerid)
         if(response[0]=='Success'){
             notif=await notification(freelancerid,userid,2,"Job Request received from producer")
             res.redirect('/createjob?response=0')
@@ -1530,7 +1530,16 @@ app.get("/acceptProducerRequest",async(req,res)=>{
                 console.log(err)
             }
             else{
-                res.redirect('/userhome')
+                query_str="insert into notifications (userid,producerid,direction,message,time) values ?"
+                var values=[[res1[0].meant_for_user,res1[0].producerid,1,"Job accepted By User","1/1/1/"]]
+                db.query(query_str,[values],(err,res2)=>{
+                    if(err){
+                        console.log(err)
+                    }
+                    else{
+                        res.redirect('/userhome')
+                    }
+                })
             }
         })
         return

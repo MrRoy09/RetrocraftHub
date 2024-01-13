@@ -80,7 +80,7 @@ function notifs(){
             
         }
     }
-    setTimeout(notifs,5000);
+    setTimeout(notifs,1000);
 }
 
 function removeNotification(){
