@@ -24,7 +24,7 @@ The procedure after is complicated and long so just to go the site (as you have 
 <h2> Link to the Website </h2>
 Or To check the actual website out, You can go to http://35.154.23.90:5000/
 <br>
-To check the main page wihtout logging in, You can use: 
+To check the main page without registering, You can use: 
 <br>
 For producer, Username: producer@gmail.com, Password: qwer 
 <br>
