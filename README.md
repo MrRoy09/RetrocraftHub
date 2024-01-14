@@ -19,7 +19,7 @@ Open terminal and type npm start
 <br>
 This should start server and give u link to access the server (example - localhost :5000 or 127.0.0.1:5000)
 <br>
-The procedure after is complicated and long so just to go the site
+The procedure after is complicated and long so just to go the site (as you have to set up a lot of SQL tables)
 
 <h2> Link to the Website </h2>
 Or To check the actual website out, You can go to http://35.154.23.90:5000/
